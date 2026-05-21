@@ -1,614 +1,2177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discrete Math: Logic & Propositions</title>
-    
-    <!-- MathJax for rendering LaTeX formulas -->
+    <title>Discrete Mathematics | Unified Study Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-        MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']]
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-    <style>
-        /* 1. CORE VARIABLES (Japandi Palette) */
-        :root {
-            --bg-color: #F7F5F0;     /* Wabi-Sabi Sand */
-            --bg-alt: #F0EBE1;       /* Darker Sand */
-            --text-main: #2C2A28;    /* Soft Charcoal */
-            --text-muted: #6B6862;   /* Stone/Taupe */
-            --accent: #E3DCD1;       /* Bleached Wood */
-            --accent-dark: #D4CAB7;
-            --success: #B5C4AD;      /* Muted Sage */
-            --transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        /* 2. RESET & FOUNDATION */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'Helvetica Neue', Helvetica, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.7;
-            -webkit-font-smoothing: antialiased;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* PROGRESS BAR */
-        #progress-bar-container {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 6px;
-            background: var(--accent); z-index: 1000;
-        }
-
-        #progress-bar {
-            height: 100%; width: 0%;
-            background: var(--success); transition: width 0.5s ease;
-        }
-
-        /* 3. LAYOUT ARCHITECTURE */
-        .container {
-            display: flex; flex-direction: column;
-            max-width: 1400px; margin: 0 auto;
-            padding: 4vw; gap: 4vw; margin-top: 10px;
-        }
-
-        @media (min-width: 900px) {
-            .container { flex-direction: row; align-items: flex-start; }
-        }
-
-        /* 4. STICKY NAVIGATION */
-        nav {
-            flex: 0 0 250px; position: sticky; top: 4vw;
-            background: var(--bg-color); padding-right: 2rem;
-            border-right: 1px solid var(--accent); display: none;
-        }
-
-        @media (min-width: 900px) { nav { display: block; } }
-
-        .nav-title {
-            font-size: 0.85rem; text-transform: uppercase;
-            letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 2rem;
-        }
-
-        nav ul { list-style: none; }
-        nav li { margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-
-        .nav-check {
-            width: 12px; height: 12px; border-radius: 50%;
-            border: 1px solid var(--text-muted); display: inline-block;
-            transition: all var(--transition);
-        }
-
-        .nav-check.mastered { background: var(--success); border-color: var(--success); }
-
-        nav a {
-            color: var(--text-main); text-decoration: none;
-            font-size: 0.95rem; transition: color var(--transition);
-        }
-        nav a:hover { color: var(--text-muted); }
-
-        /* 5. MAIN CONTENT */
-        main { flex: 1; max-width: 850px; padding-bottom: 20vh; }
-        header { margin-bottom: 8vh; }
-        h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
-        .subtitle { font-size: clamp(1.1rem, 2vw, 1.2rem); color: var(--text-muted); font-weight: 300; }
-        section { margin-bottom: 10vh; scroll-margin-top: 5vw; position: relative; }
-        h2 { font-size: 2rem; font-weight: 400; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--accent); }
-        h3 { font-size: 1.2rem; font-weight: 500; margin-bottom: 0.5rem; }
-        p { margin-bottom: 1.5rem; }
-
-        /* 6. MATH CARDS */
-        .law-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
-        .card { background: var(--bg-alt); padding: 2rem; border-radius: 4px; transition: transform var(--transition), background var(--transition); }
-        .card:hover { background: var(--accent-dark); transform: translateY(-4px); }
-        .formula { font-size: 1.3rem; margin: 1.5rem 0; padding: 1rem; background: white; border-radius: 2px; text-align: center; transition: filter 0.3s ease, opacity 0.3s ease; }
-        .example { font-size: 0.9rem; color: var(--text-muted); border-left: 2px solid var(--text-main); padding-left: 1rem; margin-top: 1rem; transition: filter 0.3s ease, opacity 0.3s ease; }
-
-        /* ACTIVE RECALL MECHANICS */
-        .active-recall-mode .revealable { filter: blur(8px); opacity: 0.6; cursor: pointer; user-select: none; }
-        .active-recall-mode .revealable.revealed { filter: blur(0); opacity: 1; background: #E2E8DD; }
-        .active-recall-mode .revealable::after { content: "Tap to reveal"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.85rem; color: var(--text-main); font-weight: bold; display: none; }
-        .active-recall-mode .revealable:not(.revealed):hover::after { display: block; }
-
-        /* TABLES */
-        table { width: 100%; border-collapse: collapse; margin: 2rem 0; background: var(--bg-alt); }
-        th, td { padding: 1rem; text-align: center; border: 1px solid var(--accent); }
-        th { font-weight: 500; background: var(--accent); }
-
-        /* 8. QUIZ / PRACTICE SECTION */
-        .quiz-container { background: var(--bg-alt); border: 1px solid var(--accent); padding: 2.5rem; border-radius: 4px; margin-top: 2rem; }
-        
-        .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;}
-        .category-select { padding: 0.5rem; font-size: 1rem; background: white; border: 1px solid var(--accent); border-radius: 2px; color: var(--text-main); outline: none;}
-
-        .quiz-question { font-size: 1.2rem; margin-bottom: 1.5rem; }
-        .quiz-options { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2rem; }
-        .quiz-option { background: white; border: 1px solid var(--accent); padding: 1rem; border-radius: 4px; cursor: pointer; transition: all var(--transition); text-align: left; font-size: 1rem; color: var(--text-main); font-family: inherit; }
-        .quiz-option:hover { background: var(--accent-dark); }
-        
-        .quiz-option.correct { background: #E2E8DD; border-color: #B5C4AD; color: #2C3B29; }
-        .quiz-option.incorrect { background: #E8DDDD; border-color: #CFC0C0; color: #4A2A2A; }
-
-        .quiz-controls { display: flex; align-items: center; gap: 1.5rem; }
-        
-        .feedback { font-weight: 500; font-size: 1rem; max-width: 500px;}
-        .feedback-explanation { display: block; font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem; font-weight: 400;}
-
-        /* BUTTONS */
-        .btn { background: var(--text-main); color: white; border: none; padding: 0.8rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 2px; transition: background var(--transition); font-family: inherit; }
-        .btn:hover { background: var(--text-muted); }
-        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--text-main); }
-        .btn-outline:hover { background: var(--text-main); color: white; }
-        .mastery-btn { display: block; width: 100%; margin-top: 1.5rem; background: var(--bg-alt); color: var(--text-main); border: 1px dashed var(--text-muted); }
-        .mastery-btn.mastered { background: var(--success); color: white; border: 1px solid var(--success); }
-
-        /* STUDY TOOLS FLOATING PANEL */
-        .study-tools { position: fixed; bottom: 2rem; right: 2rem; background: white; border: 1px solid var(--accent); border-radius: 8px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 1.5rem; z-index: 100; width: 250px; }
-        .study-tools h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem; }
-        .timer-display { font-size: 2.5rem; font-weight: 300; text-align: center; font-variant-numeric: tabular-nums; }
-        .timer-controls { display: flex; justify-content: center; gap: 0.5rem; }
-        .timer-btn { background: var(--bg-alt); border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
-        .timer-btn:hover { background: var(--accent-dark); }
-        .toggle-container { display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; cursor: pointer; }
-        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--accent); transition: .4s; border-radius: 24px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(20px); }
-    </style>
-</head>
-<body>
-
-    <div id="progress-bar-container"><div id="progress-bar"></div></div>
-
-    <div class="study-tools">
-        <div>
-            <h4>Focus Timer</h4>
-            <div class="timer-display" id="timer-display">25:00</div>
-            <div class="timer-controls">
-                <button class="timer-btn" onclick="toggleTimer()" id="timer-toggle-btn">Start</button>
-                <button class="timer-btn" onclick="resetTimer()">Break</button>
-            </div>
-        </div>
-        <hr style="border: 0; border-top: 1px solid var(--accent);">
-        <label class="toggle-container">
-            <span>Active Recall Mode<br><small style="color:var(--text-muted);font-size:0.75rem;">Blurs answers until clicked</small></span>
-            <div class="switch">
-                <input type="checkbox" id="active-recall-toggle" onchange="toggleActiveRecall()">
-                <span class="slider"></span>
-            </div>
-        </label>
-    </div>
-
-    <div class="container">
-        <!-- Sidebar Navigation -->
-        <nav>
-            <div class="nav-title">Study Modules</div>
-            <ul>
-                <li><span class="nav-check" id="nav-check-algebra"></span> <a href="#algebra">1. Algebra of Propositions</a></li>
-                <li><span class="nav-check" id="nav-check-duality"></span> <a href="#duality">2. Duality & Replacement</a></li>
-                <li><span class="nav-check" id="nav-check-conditionals"></span> <a href="#conditionals">3. Conditionals</a></li>
-                <li><span class="nav-check" id="nav-check-arguments"></span> <a href="#arguments">4. Arguments & Validity</a></li>
-                <li><span class="nav-check" id="nav-check-equivalence"></span> <a href="#equivalence">5. Logical Equivalence</a></li>
-                <li><span class="nav-check" id="nav-check-implication"></span> <a href="#implication">6. Logical Implication</a></li>
-                <li><span class="nav-check" id="nav-check-practice"></span> <a href="#practice">7. Practice Generator</a></li>
-            </ul>
-            <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted);">
-                Exam Prep Progress: <span id="progress-text">0/6</span>
-            </div>
-        </nav>
-
-        <!-- Main Content Area -->
-        <main>
-            <header>
-                <h1>Discrete Math</h1>
-                <p class="subtitle">2-Hour Cram Guide. Use the Pomodoro timer and turn on Active Recall to test your memory before reading.</p>
-            </header>
-
-            <!-- SECTION 1 -->
-            <section id="algebra" class="study-section">
-                <h2>1. Algebra of Propositions (The 9 Core Laws)</h2>
-                <p>Think of these laws as the "rules of the game" for logical statements, similar to standard algebra. We use $t$ for an absolute True and $f$ for an absolute False.</p>
-
-                <div class="law-grid">
-                    <div class="card">
-                        <h3>Idempotent Laws</h3>
-                        <p>Applying the same operation to a single proposition repeatedly does not change it.</p>
-                        <div class="formula revealable">$p \wedge p \equiv p$ <br> $p \vee p \equiv p$</div>
-                        <div class="example revealable"><strong>Ex:</strong> Saying "It is raining AND it is raining" is the exact same as just saying "It is raining".</div>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>Commutative Laws</h3>
-                        <p>The order in which you present the propositions does not change the outcome.</p>
-                        <div class="formula revealable">$p \wedge q \equiv q \wedge p$ <br> $p \vee q \equiv q \vee p$</div>
-                        <div class="example revealable"><strong>Ex:</strong> "I have a cat AND I have a dog" is the exact same as "I have a dog AND I have a cat".</div>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>Associative Laws</h3>
-                        <p>When you have a chain of the exact same operators, how you group them with parentheses doesn't matter.</p>
-                        <div class="formula revealable">$(p \wedge q) \wedge r \equiv p \wedge (q \wedge r)$ <br> $(p \vee q) \vee r \equiv p \vee (q \vee r)$</div>
-                        <div class="example revealable"><strong>Ex:</strong> "I will (wash the car AND mow the lawn), AND buy groceries" is the same as "I will wash the car, AND (mow the lawn AND buy groceries)".</div>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>Distributive Laws</h3>
-                        <p>Works like algebra: $x(y+z) = xy + xz$. You distribute an AND over an OR, or vice versa.</p>
-                        <div class="formula revealable">$p \wedge (q \vee r) \equiv (p \wedge q) \vee (p \wedge r)$ <br> $p \vee (q \wedge r) \equiv (p \vee q) \wedge (p \vee r)$</div>
-                        <div class="example revealable"><strong>Ex:</strong> "I will order a burger AND (get fries OR a salad)" means you get a burger and fries, OR a burger and a salad.</div>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>De Morgan's Laws</h3>
-                        <p>When you distribute a NOT ($\sim$ or $\overline{p}$) into parentheses, AND flips to OR, and OR flips to AND.</p>
-                        <div class="formula revealable">$\overline{p \vee q} \equiv \overline{p} \wedge \overline{q}$ <br> $\overline{p \wedge q} \equiv \overline{p} \vee \overline{q}$</div>
-                        <div class="example revealable"><strong>Ex:</strong> "It is NOT true that I will eat pizza OR pasta" means "I will NOT eat pizza AND I will NOT eat pasta".</div>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>Complement Laws</h3>
-                        <p>Defines the relationship between a proposition and its exact opposite.</p>
-                        <div class="formula revealable">$p \vee \overline{p} \equiv t$ <br> $p \wedge \overline{p} \equiv f$</div>
-                        <div class="example revealable"><strong>Ex:</strong> Law of Excluded Middle: A coin flip will result in Heads OR it will NOT result in Heads. One must be True ($t$).</div>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>Absorption Laws</h3>
-                        <p>Shortcuts: If $p$ is paired with a compound statement containing both $p$ and $q$, the $p$ "absorbs" the rest.</p>
-                        <div class="formula revealable">$p \wedge (p \vee q) \equiv p$ <br> $p \vee (p \wedge q) \equiv p$</div>
-                        <div class="example revealable"><strong>Ex:</strong> "I go to work, OR (I go to work AND drive a car)" simplifies to just "I go to work".</div>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>Identity (Domination) Laws</h3>
-                        <p>What happens when you combine an unknown ($p$) with an absolute True ($t$) or False ($f$).</p>
-                        <div class="formula revealable">$p \vee f \equiv p$ &nbsp;|&nbsp; $p \vee t \equiv t$ <br> $p \wedge t \equiv p$ &nbsp;|&nbsp; $p \wedge f \equiv f$</div>
-                        <div class="example revealable"><strong>Ex:</strong> "My name is John ($p$) AND the sun is a star ($t$)" is only true if my name is actually John.</div>
-                    </div>
-                    
-                    <div class="card">
-                        <h3>Involution Law</h3>
-                        <p>Double Negation: Two negatives cancel each other out entirely.</p>
-                        <div class="formula revealable">$\overline{\overline{p}} \equiv p$</div>
-                        <div class="example revealable"><strong>Ex:</strong> "It is NOT true that I am NOT going" simply means "I am going".</div>
-                    </div>
-                </div>
-                <button class="btn btn-outline mastery-btn" onclick="toggleSectionMastery('algebra', this)">Mark Section 1 as Mastered</button>
-            </section>
-
-            <!-- SECTION 2 -->
-            <section id="duality" class="study-section">
-                <h2>2. Duality & Replacement</h2>
-                <div class="card">
-                    <h3>The Duality Principle</h3>
-                    <p>Given any compound proposition involving only $\wedge$ and $\vee$, you can find its <strong>dual</strong> by replacing $\wedge$ with $\vee$ (and vice versa), and $t$ with $f$ (and vice versa).</p>
-                    <div class="example revealable"><strong>Example:</strong> The dual of $(p \vee f) \wedge q$ is $(p \wedge t) \vee q$.</div>
-                </div>
-                <button class="btn btn-outline mastery-btn" onclick="toggleSectionMastery('duality', this)">Mark Section 2 as Mastered</button>
-            </section>
-
-            <!-- SECTION 3 -->
-            <section id="conditionals" class="study-section">
-                <h2>3. Conditionals (If... Then)</h2>
-                <table class="revealable" style="text-align: left;">
-                    <tr><th>Statement Type</th><th>Logic Notation</th></tr>
-                    <tr><td><strong>Original</strong></td><td>$p \rightarrow q$</td></tr>
-                    <tr><td><strong>Converse</strong></td><td>$q \rightarrow p$</td></tr>
-                    <tr><td><strong>Inverse</strong></td><td>$\overline{p} \rightarrow \overline{q}$</td></tr>
-                    <tr><td><strong>Contrapositive</strong></td><td>$\overline{q} \rightarrow \overline{p}$</td></tr>
-                </table>
-                <button class="btn btn-outline mastery-btn" onclick="toggleSectionMastery('conditionals', this)">Mark Section 3 as Mastered</button>
-            </section>
-
-            <!-- SECTION 4 -->
-            <section id="arguments" class="study-section">
-                <h2>4. Arguments & Validity</h2>
-                <div class="card">
-                    <p>An argument is valid if the conjunction (ANDing) of all the premises <em>logically implies</em> the conclusion.</p>
-                    <div class="formula revealable">$(P_1 \wedge P_2 \wedge \dots \wedge P_n) \rightarrow Q \text{ is a Tautology.}$</div>
-                </div>
-                <button class="btn btn-outline mastery-btn" onclick="toggleSectionMastery('arguments', this)">Mark Section 4 as Mastered</button>
-            </section>
-
-            <!-- SECTION 5 -->
-            <section id="equivalence" class="study-section">
-                <h2>5. Logical Equivalence ($P \equiv Q$)</h2>
-                <div class="card revealable">
-                    <p>Two propositions $P$ and $Q$ are logically equivalent ($P \equiv Q$) <strong>if and only if</strong> the biconditional statement $P \leftrightarrow Q$ is a tautology (always true).</p>
-                </div>
-                <button class="btn btn-outline mastery-btn" onclick="toggleSectionMastery('equivalence', this)">Mark Section 5 as Mastered</button>
-            </section>
-
-            <!-- SECTION 6 -->
-            <section id="implication" class="study-section">
-                <h2>6. Logical Implication ($P \Rightarrow Q$)</h2>
-                <div class="card revealable">
-                    <p>'$P \Rightarrow Q$' and '$P \rightarrow Q$ is a tautology' mean exactly the same thing. The truth of $P$ guarantees the truth of $Q$.</p>
-                </div>
-                <button class="btn btn-outline mastery-btn" onclick="toggleSectionMastery('implication', this)">Mark Section 6 as Mastered</button>
-            </section>
-
-            <!-- SECTION 7: PRACTICE GENERATOR -->
-            <section id="practice">
-                <h2>7. Practice Generator (Massive Bank)</h2>
-                <p>Select a category below to target your weak spots. The "Hard Multi-Step" mode will require you to combine multiple laws and will provide step-by-step solutions if you get stuck.</p>
-                
-                <div class="quiz-container">
-                    <div class="quiz-header">
-                        <select id="category-select" class="category-select" onchange="generateProblem()">
-                            <option value="mix">Mix All Topics</option>
-                            <option value="basic">Basic Laws (Identify & Apply)</option>
-                            <option value="hard">Hard Mode (Multi-step Simplification)</option>
-                            <option value="conditionals">Conditionals (Converse, Inverse)</option>
-                            <option value="truth">Truth Tables</option>
-                        </select>
-                    </div>
-
-                    <div class="quiz-question" id="quiz-question">Loading problem...</div>
-                    <div class="quiz-options" id="quiz-options">
-                        <!-- Options injected via JavaScript -->
-                    </div>
-                    <div class="quiz-controls">
-                        <button class="btn" onclick="generateProblem()">Generate New Problem</button>
-                        <div class="feedback" id="quiz-feedback">
-                            <span id="feedback-text"></span>
-                            <span id="feedback-explanation" class="feedback-explanation"></span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-    </div>
-
-    <script>
-        // --- 1. POMODORO TIMER LOGIC ---
-        let timeRemaining = 25 * 60;
-        let timerInterval = null;
-        let isRunning = false;
-        const timerDisplay = document.getElementById('timer-display');
-        const timerBtn = document.getElementById('timer-toggle-btn');
-
-        function updateTimerDisplay() {
-            const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
-            const s = (timeRemaining % 60).toString().padStart(2, '0');
-            timerDisplay.textContent = `${m}:${s}`;
-        }
-
-        function toggleTimer() {
-            if (isRunning) { clearInterval(timerInterval); timerBtn.textContent = 'Resume'; } 
-            else {
-                timerBtn.textContent = 'Pause';
-                timerInterval = setInterval(() => {
-                    if (timeRemaining > 0) { timeRemaining--; updateTimerDisplay(); } 
-                    else { clearInterval(timerInterval); alert("Time's up! Take a 5 minute break."); resetTimer(); }
-                }, 1000);
-            }
-            isRunning = !isRunning;
-        }
-
-        function resetTimer() {
-            clearInterval(timerInterval); isRunning = false;
-            timeRemaining = timeRemaining === 25 * 60 ? 5 * 60 : 25 * 60;
-            timerBtn.textContent = timeRemaining === 5 * 60 ? 'Start Break' : 'Start Focus';
-            updateTimerDisplay();
-        }
-
-        // --- 2. ACTIVE RECALL LOGIC ---
-        function toggleActiveRecall() {
-            const isChecked = document.getElementById('active-recall-toggle').checked;
-            if (isChecked) {
-                document.body.classList.add('active-recall-mode');
-                document.querySelectorAll('.revealable').forEach(el => el.classList.remove('revealed'));
-            } else { document.body.classList.remove('active-recall-mode'); }
-        }
-
-        document.querySelectorAll('.revealable').forEach(el => {
-            el.addEventListener('click', function() {
-                if (document.body.classList.contains('active-recall-mode')) { this.classList.toggle('revealed'); }
-            });
-        });
-
-        // --- 3. MASTERY PROGRESS LOGIC ---
-        let masteredSections = 0; const totalSections = 6;
-        function toggleSectionMastery(sectionId, btn) {
-            const navCheck = document.getElementById(`nav-check-${sectionId}`);
-            if (btn.classList.contains('mastered')) {
-                btn.classList.remove('mastered'); btn.textContent = `Mark Section ${btn.textContent.match(/\d+/)[0]} as Mastered`;
-                navCheck.classList.remove('mastered'); masteredSections--;
-            } else {
-                btn.classList.add('mastered'); btn.textContent = '✓ Mastered';
-                navCheck.classList.add('mastered'); masteredSections++;
-            }
-            document.getElementById('progress-bar').style.width = ((masteredSections / totalSections) * 100) + '%';
-            document.getElementById('progress-text').textContent = `${masteredSections}/${totalSections}`;
-        }
-
-        // --- 4. MASSIVE QUESTION BANK ---
-        const basicLawsQuestions = [
-            { q: "Which law states that $p \\wedge p \\equiv p$?", ans: "Idempotent Law", options: ["Idempotent Law", "Identity Law", "Absorption Law", "Commutative Law"] },
-            { q: "Simplify using the Idempotent Law: $(p \\vee q) \\vee (p \\vee q)$", ans: "$p \\vee q$", options: ["$p \\vee q$", "$t$", "$f$", "$(p \\wedge q)$"] },
-            { q: "Which law states that $p \\vee (q \\wedge r) \\equiv (p \\vee q) \\wedge (p \\vee r)$?", ans: "Distributive Law", options: ["Distributive Law", "Associative Law", "De Morgan's Law", "Absorption Law"] },
-            { q: "Expand using Distributive Law: $p \\wedge (q \\vee r)$", ans: "$(p \\wedge q) \\vee (p \\wedge r)$", options: ["$(p \\wedge q) \\vee (p \\wedge r)$", "$(p \\vee q) \\wedge (p \\vee r)$", "$p \\vee (q \\wedge r)$", "$(p \\wedge q) \\wedge (p \\wedge r)$"] },
-            { q: "Which law is represented by $\\sim(p \\vee q) \\equiv \\sim p \\wedge \\sim q$?", ans: "De Morgan's Law", options: ["De Morgan's Law", "Complement Law", "Involution Law", "Commutative Law"] },
-            { q: "Apply De Morgan's Law to $\\sim(p \\wedge \\sim q)$", ans: "$\\sim p \\vee q$", options: ["$\\sim p \\vee q$", "$\\sim p \\wedge q$", "$p \\vee \\sim q$", "$\\sim p \\vee \\sim q$"] },
-            { q: "Which law states that $p \\vee f \\equiv p$?", ans: "Identity Law", options: ["Identity Law", "Complement Law", "Absorption Law", "Idempotent Law"] },
-            { q: "Simplify using the Identity Law: $p \\wedge t$", ans: "$p$", options: ["$p$", "$t$", "$f$", "$\\sim p$"] },
-            { q: "Which law simplifies $p \\vee t \\equiv t$?", ans: "Domination/Identity Law", options: ["Domination/Identity Law", "Complement Law", "Idempotent Law", "Involution Law"] },
-            { q: "Which law states that $p \\wedge \\sim p \\equiv f$?", ans: "Complement Law", options: ["Complement Law", "Identity Law", "Involution Law", "Absorption Law"] },
-            { q: "Simplify using the Complement Law: $q \\vee \\sim q$", ans: "$t$", options: ["$t$", "$f$", "$q$", "$\\sim q$"] },
-            { q: "Which law simplifies $p \\vee (p \\wedge q) \\equiv p$?", ans: "Absorption Law", options: ["Absorption Law", "Distributive Law", "Identity Law", "Associative Law"] },
-            { q: "Simplify using the Absorption Law: $p \\wedge (p \\vee q)$", ans: "$p$", options: ["$p$", "$p \\wedge q$", "$p \\vee q$", "$q$"] },
-            { q: "Simplify using Double Negation (Involution): $\\sim(\\sim p)$", ans: "$p$", options: ["$p$", "$\\sim p$", "$t$", "$f$"] }
-        ];
-
-        const conditionalQuestions = [
-            { q: "What is the <strong>converse</strong> of $p \\rightarrow q$?", ans: "$q \\rightarrow p$", options: ["$q \\rightarrow p$", "$\\sim p \\rightarrow \\sim q$", "$\\sim q \\rightarrow \\sim p$", "$\\sim p \\vee q$"] },
-            { q: "What is the <strong>inverse</strong> of $p \\rightarrow q$?", ans: "$\\sim p \\rightarrow \\sim q$", options: ["$\\sim p \\rightarrow \\sim q$", "$q \\rightarrow p$", "$\\sim q \\rightarrow \\sim p$", "$\\sim(p \\rightarrow q)$"] },
-            { q: "What is the <strong>contrapositive</strong> of $p \\rightarrow q$?", ans: "$\\sim q \\rightarrow \\sim p$", options: ["$\\sim q \\rightarrow \\sim p$", "$\\sim p \\rightarrow \\sim q$", "$q \\rightarrow p$", "$\\sim q \\rightarrow p$"] },
-            { q: "If the conditional is 'If it rains, then I stay inside', what is the <strong>contrapositive</strong>?", ans: "If I don't stay inside, then it is not raining.", options: ["If I don't stay inside, then it is not raining.", "If it doesn't rain, then I don't stay inside.", "If I stay inside, then it is raining.", "I stay inside and it is raining."] }
-        ];
-
-        const hardQuestions = [
-            { 
-                q: "Simplify: $(p \\wedge q) \\vee (p \\wedge \\sim q)$", 
-                ans: "$p$", 
-                options: ["$p$", "$q$", "$p \\wedge q$", "$t$"],
-                exp: "1. Distributive Law (reverse): $p \\wedge (q \\vee \\sim q)$<br>2. Complement Law: $p \\wedge t$<br>3. Identity Law: $p$"
-            },
-            { 
-                q: "Simplify: $\\sim(p \\vee \\sim q) \\vee p$", 
-                ans: "$p \\vee q$", 
-                options: ["$p \\vee q$", "$p$", "$t$", "$p \\wedge q$"],
-                exp: "1. De Morgan's: $(\\sim p \\wedge \\sim(\\sim q)) \\vee p$<br>2. Involution: $(\\sim p \\wedge q) \\vee p$<br>3. Commutative: $p \\vee (\\sim p \\wedge q)$<br>4. Distributive: $(p \\vee \\sim p) \\wedge (p \\vee q)$<br>5. Complement: $t \\wedge (p \\vee q)$<br>6. Identity: $p \\vee q$"
-            },
-            { 
-                q: "Simplify: $(p \\vee q) \\wedge \\sim p$", 
-                ans: "$\\sim p \\wedge q$", 
-                options: ["$\\sim p \\wedge q$", "$q$", "$f$", "$\\sim p \\vee q$"],
-                exp: "1. Commutative: $\\sim p \\wedge (p \\vee q)$<br>2. Distributive: $(\\sim p \\wedge p) \\vee (\\sim p \\wedge q)$<br>3. Complement: $f \\vee (\\sim p \\wedge q)$<br>4. Identity: $\\sim p \\wedge q$"
-            },
-            { 
-                q: "Simplify: $p \\vee (\\sim p \\wedge f)$", 
-                ans: "$p$", 
-                options: ["$p$", "$f$", "$t$", "$\\sim p$"],
-                exp: "1. Identity (Domination): $\\sim p \\wedge f \\equiv f$. So it becomes $p \\vee f$<br>2. Identity Law: $p \\vee f \\equiv p$"
-            },
-            { 
-                q: "Simplify: $(p \\wedge q) \\vee (\\sim p \\wedge q)$", 
-                ans: "$q$", 
-                options: ["$q$", "$p$", "$p \\vee q$", "$t$"],
-                exp: "1. Commutative: $(q \\wedge p) \\vee (q \\wedge \\sim p)$<br>2. Distributive (reverse): $q \\wedge (p \\vee \\sim p)$<br>3. Complement: $q \\wedge t$<br>4. Identity: $q$"
-            }
-        ];
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function generateTruthTableProblem() {
-            const p = Math.random() > 0.5; const q = Math.random() > 0.5;
-            const operators = [
-                { sym: "\\wedge", eval: (a,b) => a && b },
-                { sym: "\\vee", eval: (a,b) => a || b },
-                { sym: "\\rightarrow", eval: (a,b) => !a || b },
-                { sym: "\\leftrightarrow", eval: (a,b) => a === b }
-            ];
-            const op = operators[Math.floor(Math.random() * operators.length)];
-            const ansBool = op.eval(p, q);
-            const ansStr = ansBool ? "True" : "False";
-            const wrongStr = ansBool ? "False" : "True";
-
-            return {
-                q: `Given $p$ is ${p ? "True" : "False"} and $q$ is ${q ? "True" : "False"}. Evaluate the truth value of: $p ${op.sym} q$`,
-                ans: ansStr,
-                options: [ansStr, wrongStr],
-                exp: `Evaluating ${p ? "T" : "F"} ${op.sym} ${q ? "T" : "F"} results in ${ansStr}.`
-            };
-        }
-
-        let currentProblemData = {};
-
-        function generateProblem() {
-            const category = document.getElementById('category-select').value;
-            const feedbackText = document.getElementById('feedback-text');
-            const feedbackExp = document.getElementById('feedback-explanation');
-            feedbackText.textContent = ""; feedbackExp.innerHTML = "";
-            
-            let problemData;
-            
-            if (category === 'basic') { problemData = basicLawsQuestions[Math.floor(Math.random() * basicLawsQuestions.length)]; } 
-            else if (category === 'conditionals') { problemData = conditionalQuestions[Math.floor(Math.random() * conditionalQuestions.length)]; } 
-            else if (category === 'hard') { problemData = hardQuestions[Math.floor(Math.random() * hardQuestions.length)]; } 
-            else if (category === 'truth') { problemData = generateTruthTableProblem(); } 
-            else {
-                // Mix
-                const rand = Math.random();
-                if (rand < 0.3) problemData = basicLawsQuestions[Math.floor(Math.random() * basicLawsQuestions.length)];
-                else if (rand < 0.5) problemData = conditionalQuestions[Math.floor(Math.random() * conditionalQuestions.length)];
-                else if (rand < 0.75) problemData = hardQuestions[Math.floor(Math.random() * hardQuestions.length)];
-                else problemData = generateTruthTableProblem();
-            }
-
-            currentProblemData = problemData;
-            document.getElementById('quiz-question').innerHTML = problemData.q;
-            
-            const optionsContainer = document.getElementById('quiz-options');
-            optionsContainer.innerHTML = ''; 
-
-            const shuffledOptions = shuffleArray([...problemData.options]);
-
-            shuffledOptions.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'quiz-option';
-                btn.innerHTML = opt;
-                btn.dataset.val = opt; 
-                btn.onclick = () => checkAnswer(btn, opt);
-                optionsContainer.appendChild(btn);
-            });
-
-            if (window.MathJax && MathJax.typesetPromise) {
-                MathJax.typesetPromise([document.getElementById('practice')]).catch((err) => console.log(err.message));
-            }
-        }
-
-        function checkAnswer(btnEl, selectedAns) {
-            const allBtns = document.querySelectorAll('.quiz-option');
-            allBtns.forEach(b => { b.style.pointerEvents = 'none'; });
-
-            const feedbackText = document.getElementById('feedback-text');
-            const feedbackExp = document.getElementById('feedback-explanation');
-
-            if (selectedAns === currentProblemData.ans) {
-                btnEl.classList.add('correct');
-                feedbackText.textContent = "✓ Correct! ";
-                feedbackText.style.color = "#2C3B29"; 
-            } else {
-                btnEl.classList.add('incorrect');
-                feedbackText.textContent = "✗ Incorrect. ";
-                feedbackText.style.color = "#4A2A2A"; 
-                
-                allBtns.forEach(b => {
-                    if (b.dataset.val === currentProblemData.ans) { b.classList.add('correct'); }
-                });
-            }
-
-            // Show explanation if it exists (especially for hard problems)
-            if (currentProblemData.exp) {
-                feedbackExp.innerHTML = "<br><strong>Step-by-step logic:</strong><br>" + currentProblemData.exp;
-                if (window.MathJax && MathJax.typesetPromise) {
-                    MathJax.typesetPromise([feedbackExp]);
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Shippori Mincho', 'serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        japandi: {
+                            bg: 'rgb(var(--color-bg) / <alpha-value>)',
+                            surface: 'rgb(var(--color-surface) / <alpha-value>)',
+                            ink: 'rgb(var(--color-ink) / <alpha-value>)',
+                            muted: 'rgb(var(--color-muted) / <alpha-value>)',
+                            border: 'rgb(var(--color-border) / <alpha-value>)',
+                            matcha: 'rgb(var(--color-matcha) / <alpha-value>)',
+                            matchaLight: 'rgb(var(--color-matcha-light) / <alpha-value>)',
+                            terracotta: 'rgb(var(--color-terracotta) / <alpha-value>)',
+                            terracottaLight: 'rgb(var(--color-terracotta-light) / <alpha-value>)',
+                            sand: 'rgb(var(--color-sand) / <alpha-value>)',
+                            sandLight: 'rgb(var(--color-sand-light) / <alpha-value>)'
+                        }
+                    },
+                    boxShadow: {
+                        'bento': '0 4px 20px -2px rgba(44, 42, 41, 0.04)',
+                        'bento-hover': '0 12px 30px -4px rgba(44, 42, 41, 0.08)',
+                    }
                 }
             }
         }
+    </script>
+    <style>
+        :root {
+            --color-bg: 251 249 246;
+            --color-surface: 255 255 255;
+            --color-ink: 44 42 41;
+            --color-muted: 125 118 109;
+            --color-border: 230 223 211;
+            --color-matcha: 122 139 123;
+            --color-matcha-light: 243 245 242;
+            --color-terracotta: 208 124 96;
+            --color-terracotta-light: 250 243 238;
+            --color-sand: 230 223 211;
+            --color-sand-light: 245 242 235;
+        }
 
-        window.addEventListener('DOMContentLoaded', (event) => {
-            setTimeout(generateProblem, 200); 
+        .dark {
+            --color-bg: 26 26 25;
+            --color-surface: 36 36 34;
+            --color-ink: 230 223 211;
+            --color-muted: 158 149 137;
+            --color-border: 58 56 54;
+            --color-matcha: 140 160 141;
+            --color-matcha-light: 44 54 45;
+            --color-terracotta: 222 139 111;
+            --color-terracotta-light: 61 38 30;
+            --color-sand: 58 56 54;
+            --color-sand-light: 44 42 41;
+        }
+
+        body {
+            background-color: rgb(var(--color-bg));
+            color: rgb(var(--color-ink));
+            background-image: radial-gradient(rgb(var(--color-border)) 1px, transparent 1px);
+            background-size: 24px 24px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgb(var(--color-border));
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgb(var(--color-matcha));
+        }
+
+        .math-sym {
+            font-family: 'Fira Code', monospace;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .math-op {
+            color: rgb(var(--color-terracotta));
+            margin: 0 4px;
+            font-weight: 600;
+        }
+
+        .overbar {
+            border-top: 1.5px solid currentColor;
+            padding-top: 1px;
+            line-height: 1.1;
+            display: inline-block;
+        }
+
+        /* Bento Cards */
+        .bento-card {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.15);
+            border-color: rgb(var(--color-muted));
+        }
+
+        /* Nav link active style */
+        .tab-link.active {
+            background-color: rgb(var(--color-surface));
+            color: rgb(var(--color-terracotta));
+            font-weight: 600;
+            border-right: 3px solid rgb(var(--color-terracotta));
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom styling for inactive flashcards */
+        .flashcard-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front,
+        .flashcard-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+
+<body class="antialiased flex flex-col md:flex-row min-h-screen">
+
+    <!-- Mobile Header -->
+    <header
+        class="md:hidden bg-japandi-surface/90 backdrop-blur-md border-b border-japandi-border p-4 sticky top-0 z-50 flex justify-between items-center w-full shadow-sm">
+        <h1 class="font-serif font-bold text-xl text-japandi-ink">Discrete<span
+                class="text-japandi-terracotta">.</span>Math</h1>
+        <div class="flex items-center gap-2">
+            <button id="theme-toggle-mobile"
+                class="p-2 text-japandi-ink hover:text-japandi-terracotta transition-colors"><i data-lucide="moon"
+                    class="w-5 h-5"></i></button>
+            <button id="mobile-menu-btn" class="p-2 text-japandi-ink hover:text-japandi-terracotta transition-colors"><i
+                    data-lucide="menu" class="w-6 h-6"></i></button>
+        </div>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar"
+        class="hidden md:flex flex-col w-full md:w-[280px] lg:w-[320px] bg-japandi-surface border-r border-japandi-border fixed h-full z-40 transition-transform duration-300 top-[57px] md:top-0 shadow-bento md:shadow-none">
+        <div class="p-8 pb-6 hidden md:block border-b border-japandi-border/40">
+            <h1 class="font-serif font-bold text-3xl lg:text-4xl mb-1 text-japandi-ink tracking-tight">Discrete<span
+                    class="text-japandi-terracotta">.</span></h1>
+            <p class="text-[11px] lg:text-xs text-japandi-muted font-sans uppercase tracking-widest font-semibold mt-2">
+                Exam Prep Hub</p>
+        </div>
+
+        <nav class="flex-grow overflow-y-auto py-4" id="sidebar-nav">
+            <p class="px-8 text-[10px] font-bold text-japandi-muted uppercase tracking-widest mb-3">Study Modules</p>
+            <button onclick="switchTab('dashboard')"
+                class="tab-link active w-full text-left px-8 py-3.5 text-japandi-ink transition-all text-sm font-sans font-medium hover:text-japandi-terracotta flex items-center gap-3"><i
+                    data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard</button>
+            <button onclick="switchTab('m5-algebra')"
+                class="tab-link w-full text-left px-8 py-3.5 text-japandi-ink transition-all text-sm font-sans font-medium hover:text-japandi-terracotta flex items-center gap-3"><i
+                    data-lucide="binary" class="w-4 h-4"></i> Module 5: Algebra</button>
+            <button onclick="switchTab('m6-predicates')"
+                class="tab-link w-full text-left px-8 py-3.5 text-japandi-ink transition-all text-sm font-sans font-medium hover:text-japandi-terracotta flex items-center gap-3"><i
+                    data-lucide="terminal" class="w-4 h-4"></i> Module 6: Predicates</button>
+            <button onclick="switchTab('m7-circuits')"
+                class="tab-link w-full text-left px-8 py-3.5 text-japandi-ink transition-all text-sm font-sans font-medium hover:text-japandi-terracotta flex items-center gap-3"><i
+                    data-lucide="cpu" class="w-4 h-4"></i> Module 7: Boolean Logic</button>
+
+            <p class="px-8 text-[10px] font-bold text-japandi-muted uppercase tracking-widest mb-3 mt-6">Practice Labs
+            </p>
+            <button onclick="switchTab('lab-canonical')"
+                class="tab-link w-full text-left px-8 py-3.5 text-japandi-ink transition-all text-sm font-sans font-medium hover:text-japandi-terracotta flex items-center gap-3"><i
+                    data-lucide="binary" class="w-4 h-4"></i> Canonical SOP/POS Solver</button>
+            <button onclick="switchTab('lab-quiz')"
+                class="tab-link w-full text-left px-8 py-3.5 text-japandi-terracotta transition-all text-sm font-sans font-semibold hover:bg-japandi-bg flex items-center gap-3"><i
+                    data-lucide="award" class="w-4 h-4"></i> Step-by-Step Quiz</button>
+            <button onclick="switchTab('lab-playground')"
+                class="tab-link w-full text-left px-8 py-3.5 text-japandi-ink transition-all text-sm font-sans font-medium hover:text-japandi-terracotta flex items-center gap-3"><i
+                    data-lucide="cpu" class="w-4 h-4"></i> Dynamic Playground</button>
+        </nav>
+
+        <div
+            class="p-6 bg-japandi-bg border-t border-japandi-border text-xs text-japandi-muted font-sans hidden md:flex items-center justify-between">
+            <p class="flex items-center gap-2">
+                <i data-lucide="user" class="w-4 h-4 text-japandi-terracotta"></i>
+                <span>Keith's Study Space</span>
+            </p>
+            <button id="theme-toggle-desktop"
+                class="p-2 text-japandi-ink hover:text-japandi-terracotta transition-colors rounded-lg bg-japandi-surface border border-japandi-border"><i
+                    data-lucide="moon" class="w-4 h-4"></i></button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main
+        class="flex-1 md:ml-[280px] lg:ml-[320px] p-4 sm:p-6 lg:p-8 xl:p-10 max-w-[1600px] mx-auto w-full overflow-hidden">
+
+        <!-- TAB: DASHBOARD -->
+        <div id="tab-dashboard" class="tab-panel active">
+            <div class="mb-8 border-b border-japandi-border pb-6">
+                <span
+                    class="text-japandi-terracotta font-sans text-xs uppercase tracking-widest font-bold mb-2 block">Interactive
+                    Hub</span>
+                <h1 class="font-serif text-4xl md:text-5xl font-bold text-japandi-ink tracking-tight mb-4">Exam Study
+                    Portal</h1>
+                <p class="text-japandi-muted text-sm md:text-base font-sans font-light max-w-2xl leading-relaxed">
+                    Welcome back, Keith. Let's make sure you ace your upcoming Discrete Mathematics exam. Below is your
+                    structured overview of Modules 5, 6, and 7. Select any card to jump directly into deep-study mode.
+                </p>
+            </div>
+
+            <!-- Bento Dashboard Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Module 5 Card -->
+                <div onclick="switchTab('m5-algebra')"
+                    class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 shadow-bento card-hover cursor-pointer flex flex-col justify-between min-h-[220px]">
+                    <div class="flex justify-between items-start">
+                        <div class="p-3 rounded-2xl bg-japandi-terracottaLight text-japandi-terracotta"><i
+                                data-lucide="binary" class="w-6 h-6"></i></div>
+                        <span class="text-[10px] font-bold text-japandi-muted uppercase tracking-widest">Module 5</span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="font-serif font-bold text-xl text-japandi-ink mb-2">Algebra of Propositions</h3>
+                        <p class="text-xs text-japandi-muted font-sans font-light leading-relaxed">Laws of logical
+                            equivalence, Duality Principle, Conditionals (Converse, Inverse, Contrapositive), and
+                            proving arguments.</p>
+                    </div>
+                </div>
+
+                <!-- Module 6 Card -->
+                <div onclick="switchTab('m6-predicates')"
+                    class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 shadow-bento card-hover cursor-pointer flex flex-col justify-between min-h-[220px]">
+                    <div class="flex justify-between items-start">
+                        <div class="p-3 rounded-2xl bg-japandi-matchaLight text-japandi-matcha"><i
+                                data-lucide="terminal" class="w-6 h-6"></i></div>
+                        <span class="text-[10px] font-bold text-japandi-muted uppercase tracking-widest">Module 6</span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="font-serif font-bold text-xl text-japandi-ink mb-2">Predicate Logic</h3>
+                        <p class="text-xs text-japandi-muted font-sans font-light leading-relaxed">First-Order
+                            Predicates, constants, variables, mnemonic dictionaries, and quantifiers (Universal
+                            &forall; and Existential &exist;).</p>
+                    </div>
+                </div>
+
+                <!-- Module 7 Card -->
+                <div onclick="switchTab('m7-circuits')"
+                    class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 shadow-bento card-hover cursor-pointer flex flex-col justify-between min-h-[220px]">
+                    <div class="flex justify-between items-start">
+                        <div class="p-3 rounded-2xl bg-japandi-sandLight text-japandi-ink"><i data-lucide="cpu"
+                                class="w-6 h-6"></i></div>
+                        <span class="text-[10px] font-bold text-japandi-muted uppercase tracking-widest">Module 7</span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="font-serif font-bold text-xl text-japandi-ink mb-2">Boolean Circuits</h3>
+                        <p class="text-xs text-japandi-muted font-sans font-light leading-relaxed">George Boole & Claude
+                            Shannon, operator precedence, Logic Gates (AND, OR, NOT, NAND, NOR), SOP & POS, and
+                            minimization proofs.</p>
+                    </div>
+                </div>
+
+                <!-- Practice Lab Card -->
+                <div onclick="switchTab('lab-canonical')"
+                    class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 shadow-bento card-hover cursor-pointer flex flex-col justify-between min-h-[220px] lg:col-span-2">
+                    <div class="flex justify-between items-start">
+                        <div class="p-3 rounded-2xl bg-japandi-matchaLight text-japandi-matcha"><i data-lucide="sliders"
+                                class="w-6 h-6"></i></div>
+                        <span class="text-[10px] font-bold text-japandi-muted uppercase tracking-widest">Interactive
+                            Laboratory</span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="font-serif font-bold text-xl text-japandi-ink mb-1">Canonical SOP/POS Solver</h3>
+                        <p class="text-xs text-japandi-muted font-sans font-light leading-relaxed mb-4">Toggle standard
+                            3-variable truth table outputs, and watch the system build the full mathematical
+                            Sum-of-Products and Product-of-Sums expressions instantly.</p>
+                        <span class="inline-flex items-center gap-2 text-xs font-semibold text-japandi-matcha">Launch
+                            Solver <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+                    </div>
+                </div>
+
+                <!-- Quiz Card -->
+                <div onclick="switchTab('lab-quiz')"
+                    class="bg-japandi-terracotta text-japandi-bg rounded-3xl p-6 shadow-bento card-hover cursor-pointer flex flex-col justify-between min-h-[220px]">
+                    <div class="flex justify-between items-start">
+                        <div class="p-3 rounded-2xl bg-japandi-bg/20 text-japandi-bg"><i data-lucide="award"
+                                class="w-6 h-6"></i>
+                        </div>
+                        <span
+                            class="text-[10px] font-bold text-japandi-bg/70 uppercase tracking-widest">Assessments</span>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="font-serif font-bold text-xl text-japandi-bg mb-2">Self-Test Center</h3>
+                        <p class="text-xs text-japandi-bg/95 font-sans font-light leading-relaxed mb-4">Generate
+                            infinite
+                            multi-level logic and circuit design questions, complete with step-by-step derivations.</p>
+                        <span class="inline-flex items-center gap-2 text-xs font-semibold text-japandi-bg/90">Start Quiz
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: MODULE 5 ALGEBRA -->
+        <div id="tab-m5-algebra" class="tab-panel">
+            <div class="mb-8 border-b border-japandi-border pb-6">
+                <span
+                    class="text-japandi-terracotta font-sans text-xs uppercase tracking-widest font-bold mb-2 block">Lesson
+                    5 Notes</span>
+                <h1 class="font-serif text-4xl font-bold text-japandi-ink tracking-tight">Algebra of Propositions</h1>
+            </div>
+
+            <!-- Laws Section -->
+            <div class="mb-8">
+                <h2 class="font-serif text-2xl font-bold text-japandi-ink mb-6 flex items-center gap-3"><i
+                        data-lucide="repeat-2" class="text-japandi-terracotta"></i> Interactive Flashcards: The 9 Laws
+                </h2>
+                <p class="text-xs text-japandi-muted font-sans font-light mb-6">Click on any card to flip it and reveal
+                    the corresponding real-world English translation example.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Idempotent -->
+                    <div onclick="flipCard(this)"
+                        class="flashcard cursor-pointer h-48 relative rounded-2xl border border-japandi-border overflow-hidden bg-japandi-surface shadow-soft">
+                        <div class="flashcard-inner relative w-full h-full">
+                            <div class="flashcard-front p-6 flex flex-col justify-between">
+                                <h3 class="font-serif font-bold text-lg text-japandi-ink">1. Idempotent Laws</h3>
+                                <div
+                                    class="bg-japandi-bg p-3 rounded-xl text-center font-mono text-sm border border-japandi-border/30">
+                                    p &and; p &equiv; p <br>
+                                    p &or; p &equiv; p
+                                </div>
+                                <span
+                                    class="text-[10px] text-japandi-terracotta font-bold uppercase tracking-widest self-end">Tap
+                                    to Reveal Example</span>
+                            </div>
+                            <div
+                                class="flashcard-back p-6 bg-japandi-terracottaLight text-japandi-ink flex flex-col justify-between">
+                                <h4
+                                    class="font-sans font-bold text-xs uppercase text-japandi-terracotta tracking-wider">
+                                    English Concept Example</h4>
+                                <p class="text-sm italic font-light leading-relaxed my-auto">"It is raining AND it is
+                                    raining" yields exactly the same logical meaning as "It is raining".</p>
+                                <span
+                                    class="text-[10px] text-japandi-muted font-bold uppercase tracking-widest self-end">Tap
+                                    to Flip Back</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Commutative -->
+                    <div onclick="flipCard(this)"
+                        class="flashcard cursor-pointer h-48 relative rounded-2xl border border-japandi-border overflow-hidden bg-japandi-surface shadow-soft">
+                        <div class="flashcard-inner relative w-full h-full">
+                            <div class="flashcard-front p-6 flex flex-col justify-between">
+                                <h3 class="font-serif font-bold text-lg text-japandi-ink">2. Commutative Laws</h3>
+                                <div
+                                    class="bg-japandi-bg p-3 rounded-xl text-center font-mono text-[11px] border border-japandi-border/30">
+                                    p &and; q &equiv; q &and; p &nbsp;|&nbsp; p &or; q &equiv; q &or; p <br>
+                                    p &harr; q &equiv; q &harr; p &nbsp;|&nbsp; p <span class="overbar">&or;</span> q
+                                    &equiv; q <span class="overbar">&or;</span> p
+                                </div>
+                                <span
+                                    class="text-[10px] text-japandi-terracotta font-bold uppercase tracking-widest self-end">Tap
+                                    to Reveal Example</span>
+                            </div>
+                            <div
+                                class="flashcard-back p-6 bg-japandi-terracottaLight text-japandi-ink flex flex-col justify-between">
+                                <h4
+                                    class="font-sans font-bold text-xs uppercase text-japandi-terracotta tracking-wider">
+                                    English Concept Example</h4>
+                                <p class="text-sm italic font-light leading-relaxed my-auto">"I have a cat AND I have a
+                                    dog" is logically equivalent to "I have a dog AND I have a cat".</p>
+                                <span
+                                    class="text-[10px] text-japandi-muted font-bold uppercase tracking-widest self-end">Tap
+                                    to Flip Back</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Associative -->
+                    <div onclick="flipCard(this)"
+                        class="flashcard cursor-pointer h-48 relative rounded-2xl border border-japandi-border overflow-hidden bg-japandi-surface shadow-soft">
+                        <div class="flashcard-inner relative w-full h-full">
+                            <div class="flashcard-front p-6 flex flex-col justify-between">
+                                <h3 class="font-serif font-bold text-lg text-japandi-ink">3. Associative Laws</h3>
+                                <div
+                                    class="bg-japandi-bg p-3 rounded-xl text-center font-mono text-[11px] border border-japandi-border/30">
+                                    (p &and; q) &and; r &equiv; p &and; (q &and; r) <br>
+                                    (p &or; q) &or; r &equiv; p &or; (q &or; r)
+                                </div>
+                                <span
+                                    class="text-[10px] text-japandi-terracotta font-bold uppercase tracking-widest self-end">Tap
+                                    to Reveal Example</span>
+                            </div>
+                            <div
+                                class="flashcard-back p-6 bg-japandi-terracottaLight text-japandi-ink flex flex-col justify-between">
+                                <h4
+                                    class="font-sans font-bold text-xs uppercase text-japandi-terracotta tracking-wider">
+                                    English Concept Example</h4>
+                                <p class="text-sm italic font-light leading-relaxed my-auto">"Wash the car AND mow the
+                                    lawn, AND buy groceries" matches "Wash the car, AND mow the lawn AND buy groceries".
+                                    Grouping the same operators with parentheses has no impact.</p>
+                                <span
+                                    class="text-[10px] text-japandi-muted font-bold uppercase tracking-widest self-end">Tap
+                                    to Flip Back</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Distributive -->
+                    <div onclick="flipCard(this)"
+                        class="flashcard cursor-pointer h-48 relative rounded-2xl border border-japandi-border overflow-hidden bg-japandi-surface shadow-soft">
+                        <div class="flashcard-inner relative w-full h-full">
+                            <div class="flashcard-front p-6 flex flex-col justify-between">
+                                <h3 class="font-serif font-bold text-lg text-japandi-ink">4. Distributive Laws</h3>
+                                <div
+                                    class="bg-japandi-bg p-3 rounded-xl text-center font-mono text-[10px] border border-japandi-border/30">
+                                    p &and; (q &or; r) &equiv; (p &and; q) &or; (p &and; r) <br>
+                                    p &or; (q &and; r) &equiv; (p &or; q) &and; (p &or; r)
+                                </div>
+                                <span
+                                    class="text-[10px] text-japandi-terracotta font-bold uppercase tracking-widest self-end">Tap
+                                    to Reveal Example</span>
+                            </div>
+                            <div
+                                class="flashcard-back p-6 bg-japandi-terracottaLight text-japandi-ink flex flex-col justify-between">
+                                <h4
+                                    class="font-sans font-bold text-xs uppercase text-japandi-terracotta tracking-wider">
+                                    English Concept Example</h4>
+                                <p class="text-sm italic font-light leading-relaxed my-auto">"I will order a burger AND
+                                    I will get either fries or a salad" &equiv; "(Order a burger AND get fries) OR
+                                    (Order a burger AND get salad)".</p>
+                                <span
+                                    class="text-[10px] text-japandi-muted font-bold uppercase tracking-widest self-end">Tap
+                                    to Flip Back</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Absorption -->
+                    <div onclick="flipCard(this)"
+                        class="flashcard cursor-pointer h-48 relative rounded-2xl border border-japandi-border overflow-hidden bg-japandi-surface shadow-soft">
+                        <div class="flashcard-inner relative w-full h-full">
+                            <div class="flashcard-front p-6 flex flex-col justify-between">
+                                <h3 class="font-serif font-bold text-lg text-japandi-ink">5. Absorption Laws</h3>
+                                <div
+                                    class="bg-japandi-bg p-3 rounded-xl text-center font-mono text-sm border border-japandi-border/30">
+                                    p &and; (p &or; q) &equiv; p <br>
+                                    p &or; (p &and; q) &equiv; p
+                                </div>
+                                <span
+                                    class="text-[10px] text-japandi-terracotta font-bold uppercase tracking-widest self-end">Tap
+                                    to Reveal Example</span>
+                            </div>
+                            <div
+                                class="flashcard-back p-6 bg-japandi-terracottaLight text-japandi-ink flex flex-col justify-between">
+                                <h4
+                                    class="font-sans font-bold text-xs uppercase text-japandi-terracotta tracking-wider">
+                                    English Concept Example</h4>
+                                <p class="text-sm italic font-light leading-relaxed my-auto">"I go to work, OR (I go to
+                                    work AND drive a car)" simplifies entirely to just "I go to work". The variable 'p'
+                                    absorbs 'q'.</p>
+                                <span
+                                    class="text-[10px] text-japandi-muted font-bold uppercase tracking-widest self-end">Tap
+                                    to Flip Back</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- De Morgan's -->
+                    <div onclick="flipCard(this)"
+                        class="flashcard cursor-pointer h-48 relative rounded-2xl border border-japandi-border overflow-hidden bg-japandi-surface shadow-soft">
+                        <div class="flashcard-inner relative w-full h-full">
+                            <div class="flashcard-front p-6 flex flex-col justify-between">
+                                <h3 class="font-serif font-bold text-lg text-japandi-ink">6. De Morgan's Laws</h3>
+                                <div
+                                    class="bg-japandi-bg p-3 rounded-xl text-center font-mono text-sm border border-japandi-border/30">
+                                    <span class="overbar">p &or; q</span> &equiv; <span class="overbar">p</span> &and;
+                                    <span class="overbar">q</span> <br>
+                                    <span class="overbar">p &and; q</span> &equiv; <span class="overbar">p</span> &or;
+                                    <span class="overbar">q</span>
+                                </div>
+                                <span
+                                    class="text-[10px] text-japandi-terracotta font-bold uppercase tracking-widest self-end">Tap
+                                    to Reveal Example</span>
+                            </div>
+                            <div
+                                class="flashcard-back p-6 bg-japandi-terracottaLight text-japandi-ink flex flex-col justify-between">
+                                <h4
+                                    class="font-sans font-bold text-xs uppercase text-japandi-terracotta tracking-wider">
+                                    English Concept Example</h4>
+                                <p class="text-sm italic font-light leading-relaxed my-auto">"It is NOT true that I will
+                                    eat pizza OR pasta" &equiv; "I will NOT eat pizza AND I will NOT eat pasta". The
+                                    operator flips when negation is distributed.</p>
+                                <span
+                                    class="text-[10px] text-japandi-muted font-bold uppercase tracking-widest self-end">Tap
+                                    to Flip Back</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Duality and Replacement Rule -->
+            <div class="grid lg:grid-cols-2 gap-8 my-8">
+                <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-8 shadow-bento">
+                    <h3 class="font-serif font-bold text-xl text-japandi-ink mb-4 flex items-center gap-3"><i
+                            data-lucide="yin-yang" class="text-japandi-terracotta"></i> Duality Principle</h3>
+                    <p class="text-sm font-sans font-light text-japandi-muted leading-relaxed mb-6">
+                        To construct the dual of any compound proposition involving only &and; and &or;, execute
+                        strict replacements: replace &and; with &or;, &or; with &and;, T with F, and F
+                        with T.
+                    </p>
+                    <div
+                        class="bg-japandi-bg p-5 rounded-2xl border border-japandi-border/50 text-center font-mono text-xs text-japandi-ink">
+                        <p class="mb-2"><strong>Dual of:</strong> (p &and; q) &or; <span class="overbar">p</span>
+                            &nbsp;&rarr;&nbsp;
+                            (p &or; q) &and; <span class="overbar">p</span></p>
+                        <p><strong>Dual of:</strong> (p &or; F) &and; q &nbsp;&rarr;&nbsp; (p &and; T) &or; q</p>
+                    </div>
+                </div>
+
+                <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-8 shadow-bento">
+                    <h3 class="font-serif font-bold text-xl text-japandi-ink mb-4 flex items-center gap-3"><i
+                            data-lucide="replace" class="text-japandi-matcha"></i> Replacement Rule</h3>
+                    <p class="text-sm font-sans font-light text-japandi-muted leading-relaxed mb-6">
+                        If two propositions are logically equivalent (P<sub>1</sub> &equiv; P<sub>2</sub>), you can
+                        substitute P<sub>2</sub> for
+                        P<sub>1</sub> anywhere inside a larger compound statement without changing the truth value of
+                        the
+                        overall expression.
+                    </p>
+                    <div
+                        class="bg-japandi-bg p-4 rounded-2xl border border-japandi-border/50 font-mono text-xs text-japandi-ink leading-relaxed">
+                        <strong class="text-japandi-terracotta">Derivation Example:</strong> Prove (<span
+                            class="overbar">p</span> &and;
+                        q) &or; (<span class="overbar">p &or; q</span>) &equiv; <span class="overbar">p</span><br>
+                        1. (<span class="overbar">p</span> &and; q) &or; (<span class="overbar">p</span> &and; <span
+                            class="overbar">q</span>) &nbsp;&nbsp;[De Morgan's
+                        Laws]<br>
+                        2. <span class="overbar">p</span> &and; (q &or; <span class="overbar">q</span>)
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Distributive Laws]<br>
+                        3. <span class="overbar">p</span> &and; 1
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Complement
+                        Laws]<br>
+                        4. <span class="overbar">p</span>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Identity
+                        Laws]
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conditionals Structure -->
+            <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-10 shadow-bento my-8">
+                <h3 class="font-serif font-bold text-2xl text-japandi-ink mb-6 flex items-center gap-3"><i
+                        data-lucide="shuffle" class="text-japandi-terracotta"></i> Conditionals Matrix</h3>
+                <p class="text-sm font-sans font-light text-japandi-muted mb-8 leading-relaxed">
+                    Given the conditional proposition p &rarr; q ("If Jack plays his guitar, then Sara will
+                    sing"), we evaluate its 3 structural permutations:
+                </p>
+                <div class="grid sm:grid-cols-3 gap-6 text-center">
+                    <div class="bg-japandi-bg p-5 rounded-2xl border border-japandi-border">
+                        <span
+                            class="text-[10px] uppercase tracking-widest font-bold text-japandi-muted block mb-2">Converse</span>
+                        <span class="math-sym font-bold text-sm block mb-2">q &rarr; p</span>
+                        <p class="text-xs text-japandi-muted italic">"If Sara will sing, then Jack plays his guitar."
+                        </p>
+                    </div>
+                    <div class="bg-japandi-bg p-5 rounded-2xl border border-japandi-border">
+                        <span
+                            class="text-[10px] uppercase tracking-widest font-bold text-japandi-muted block mb-2">Inverse</span>
+                        <span class="math-sym font-bold text-sm block mb-2"><span class="overbar">p</span> &rarr;
+                            <span class="overbar">q</span></span>
+                        <p class="text-xs text-japandi-muted italic">"If Jack doesn't play his guitar, then Sara won't
+                            sing."</p>
+                    </div>
+                    <div class="bg-japandi-terracottaLight p-5 rounded-2xl border border-japandi-terracotta/20">
+                        <span
+                            class="text-[10px] uppercase tracking-widest font-bold text-japandi-terracotta block mb-2">Contrapositive</span>
+                        <span class="math-sym font-bold text-sm block mb-2 text-japandi-ink"><span
+                                class="overbar">q</span> &rarr;
+                            <span class="overbar">p</span></span>
+                        <p class="text-xs text-japandi-ink/80 italic">"If Sara won't sing, then Jack doesn't play his
+                            guitar."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: MODULE 6 PREDICATES -->
+        <div id="tab-m6-predicates" class="tab-panel">
+            <div class="mb-8 border-b border-japandi-border pb-6">
+                <span
+                    class="text-japandi-terracotta font-sans text-xs uppercase tracking-widest font-bold mb-2 block">Lesson
+                    6 Notes</span>
+                <h1 class="font-serif text-4xl font-bold text-japandi-ink tracking-tight">Predicate Logic</h1>
+            </div>
+
+            <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-10 shadow-bento mb-8">
+                <h3 class="font-serif text-2xl text-japandi-ink mb-4">First-Order Predicates</h3>
+                <p class="text-sm font-sans font-light text-japandi-muted leading-relaxed mb-6">
+                    A predicate is a sentence containing variables that becomes a declarative proposition once specific
+                    entities are substituted. Capital letters are used for predicates; lowercase letters at the
+                    beginning of the alphabet act as constants (specific entities like <em>m</em> for Mary), and those
+                    at the
+                    end act as variables (<em>x, y, z</em>).
+                </p>
+                <div class="grid md:grid-cols-2 gap-6 bg-japandi-bg p-6 rounded-2xl border border-japandi-border">
+                    <div>
+                        <h4 class="font-sans font-bold text-xs uppercase tracking-widest text-japandi-muted mb-3">
+                            Multi-Variable Relations</h4>
+                        <p class="text-xs text-japandi-ink/80 leading-relaxed mb-3">Predicates can describe properties
+                            of multiple variables simultaneously.</p>
+                        <div class="font-mono text-xs bg-japandi-surface p-3 rounded-xl border border-japandi-border">
+                            L(x, y, z): x lent y to z <br>
+                            O(x, y): x lost y <br><br>
+                            <strong>"Alice lent a book to Bob, but Bob lost it":</strong><br>
+                            L(a, o, b) &and; O(b, o)
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-sans font-bold text-xs uppercase tracking-widest text-japandi-muted mb-3">
+                            Mnemonic Constants & Predicates</h4>
+                        <p class="text-xs text-japandi-ink/80 leading-relaxed mb-3">Choosing letters corresponding to
+                            English names makes translations much easier to read.</p>
+                        <div
+                            class="font-mono text-xs bg-japandi-surface p-3 rounded-xl border border-japandi-border space-y-1">
+                            <p><strong>Constants:</strong> m = Mary, j = John, p = Paul</p>
+                            <p><strong>Predicates:</strong> S(x) = "x is a suspect", A(x) = "x has an alibi"</p>
+                            <div class="h-[1px] bg-japandi-border my-2"></div>
+                            <p class="text-[10px] text-japandi-terracotta">"If Mary knows John, then Mary has no alibi":
+                            </p>
+                            <p>K(m,j) &rarr; <span class="overbar">A</span>(m)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quantifiers Guide -->
+            <div class="grid md:grid-cols-2 gap-8 my-8">
+                <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-8 shadow-soft">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-serif font-bold text-xl text-japandi-ink">Universal Quantification (&forall;)
+                        </h3>
+                        <span class="math-sym text-3xl text-japandi-terracotta">&forall;</span>
+                    </div>
+                    <p class="text-xs text-japandi-muted font-sans font-light mb-6">Specifies that the property holds
+                        true for <strong>every</strong> entity in the domain.</p>
+                    <div class="bg-japandi-bg p-4 rounded-xl font-mono text-xs text-japandi-ink space-y-2">
+                        <p><strong>"Every student who studies hard will pass":</strong></p>
+                        <p class="font-bold">&forall;x [(S(x) &and; H(x)) &rarr; P(x)]</p>
+                        <div class="h-[1px] bg-japandi-border my-2"></div>
+                        <p><strong>"No cats are reptiles":</strong></p>
+                        <p class="font-bold">&forall;x [C(x) &rarr; &not;R(x)]</p>
+                    </div>
+                </div>
+
+                <div class="bg-japandi-surface border border-japandi-border rounded-3xl shadow-soft p-6 md:p-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-serif font-bold text-xl text-japandi-ink">Existential Quantification (&exist;)
+                        </h3>
+                        <span class="math-sym text-3xl text-japandi-matcha">&exist;</span>
+                    </div>
+                    <p class="text-xs text-japandi-muted font-sans font-light mb-6">Specifies that the property holds
+                        true for <strong>at least one</strong> entity in the domain.</p>
+                    <div class="bg-japandi-bg p-4 rounded-xl font-mono text-xs text-japandi-ink space-y-2">
+                        <p><strong>"Some children didn't apologize":</strong></p>
+                        <p class="font-bold">&exist;x [C(x) &and; &not;A(x)]</p>
+                        <div class="h-[1px] bg-japandi-border my-2"></div>
+                        <p><strong>"Some people think of no one but themselves":</strong></p>
+                        <p class="font-bold">&exist;x [P(x) &and; N(x)]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: MODULE 7 CIRCUITS -->
+        <div id="tab-m7-circuits" class="tab-panel">
+            <div class="mb-8 border-b border-japandi-border pb-6">
+                <span
+                    class="text-japandi-terracotta font-sans text-xs uppercase tracking-widest font-bold mb-2 block">Lesson
+                    7 Notes</span>
+                <h1 class="font-serif text-4xl font-bold text-japandi-ink tracking-tight">Boolean Algebra & Gates</h1>
+            </div>
+
+            <!-- Foundations -->
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-8 shadow-bento">
+                    <h3 class="font-serif font-bold text-xl text-japandi-ink mb-4 flex items-center gap-3"><i
+                            data-lucide="book-open" class="text-japandi-terracotta"></i> What is Boolean Algebra?</h3>
+                    <p class="text-sm font-sans font-light text-japandi-muted leading-relaxed mb-4">
+                        Unlike standard algebra which deals with infinite numbers, <strong>Boolean Algebra</strong> only
+                        deals with two states: <strong>1 (True/High)</strong> and <strong>0 (False/Low)</strong>. It is
+                        the mathematical foundation of all modern computer circuits.
+                    </p>
+                    <p class="text-sm font-sans font-light text-japandi-muted leading-relaxed">
+                        By connecting tiny physical switches (transistors) in specific patterns on a microchip, we can
+                        physically compute logical operations.
+                    </p>
+                </div>
+
+                <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-8 shadow-bento">
+                    <h3 class="font-serif font-bold text-xl text-japandi-ink mb-4 flex items-center gap-3"><i
+                            data-lucide="list-ordered" class="text-japandi-matcha"></i> Operator Precedence</h3>
+                    <p class="text-sm font-sans font-light text-japandi-muted leading-relaxed mb-4">
+                        Just like PEMDAS in regular math, Boolean logic has a strict order of operations to prevent
+                        ambiguity when reading equations:
+                    </p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-4 bg-japandi-bg p-3 rounded-xl border border-japandi-border">
+                            <span
+                                class="w-6 h-6 rounded-full bg-japandi-ink text-japandi-bg flex items-center justify-center text-xs font-bold">1</span>
+                            <span class="text-sm font-semibold text-japandi-ink">Parentheses <span
+                                    class="math-sym font-normal text-japandi-muted ml-2">( )</span></span>
+                        </div>
+                        <div class="flex items-center gap-4 bg-japandi-bg p-3 rounded-xl border border-japandi-border">
+                            <span
+                                class="w-6 h-6 rounded-full bg-japandi-terracotta text-japandi-bg flex items-center justify-center text-xs font-bold">2</span>
+                            <span class="text-sm font-semibold text-japandi-ink">NOT (Complement) <span
+                                    class="math-sym font-normal text-japandi-muted ml-2"><span
+                                        class="overbar">A</span></span></span>
+                        </div>
+                        <div class="flex items-center gap-4 bg-japandi-bg p-3 rounded-xl border border-japandi-border">
+                            <span
+                                class="w-6 h-6 rounded-full bg-japandi-matcha text-japandi-bg flex items-center justify-center text-xs font-bold">3</span>
+                            <span class="text-sm font-semibold text-japandi-ink">AND (Multiplication) <span
+                                    class="math-sym font-normal text-japandi-muted ml-2">&middot;</span></span>
+                        </div>
+                        <div class="flex items-center gap-4 bg-japandi-bg p-3 rounded-xl border border-japandi-border">
+                            <span
+                                class="w-6 h-6 rounded-full bg-japandi-muted text-japandi-bg flex items-center justify-center text-xs font-bold">4</span>
+                            <span class="text-sm font-semibold text-japandi-ink">OR (Addition) <span
+                                    class="math-sym font-normal text-japandi-muted ml-2">+</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logic Gate Workbench -->
+            <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-10 shadow-bento mb-8">
+                <h3 class="font-serif text-2xl text-japandi-ink mb-2">The Logic Gate Workbench</h3>
+                <p class="text-sm font-sans font-light text-japandi-muted mb-8 leading-relaxed">Select a physical gate
+                    from the workbench to view its circuit symbol, live truth values, and corresponding Boolean
+                    equation.</p>
+
+                <div class="grid lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-4 flex flex-col gap-2">
+                        <button onclick="selectWorkbenchGate('and')" id="w-gate-and"
+                            class="workbench-btn w-full p-3 text-left rounded-xl border-2 border-japandi-border hover:bg-japandi-bg font-sans font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-between">AND
+                            Gate <span class="math-sym">A &middot; B</span></button>
+                        <button onclick="selectWorkbenchGate('or')" id="w-gate-or"
+                            class="workbench-btn w-full p-3 text-left rounded-xl border-2 border-japandi-border hover:bg-japandi-bg font-sans font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-between">OR
+                            Gate <span class="math-sym">A + B</span></button>
+                        <button onclick="selectWorkbenchGate('not')" id="w-gate-not"
+                            class="workbench-btn w-full p-3 text-left rounded-xl border-2 border-japandi-border hover:bg-japandi-bg font-sans font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-between">NOT
+                            Gate <span class="math-sym"><span class="overbar">A</span></span></button>
+                        <button onclick="selectWorkbenchGate('nand')" id="w-gate-nand"
+                            class="workbench-btn w-full p-3 text-left rounded-xl border-2 border-japandi-border hover:bg-japandi-bg font-sans font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-between">NAND
+                            Gate <span class="math-sym"><span class="overbar">A &middot; B</span></span></button>
+                        <button onclick="selectWorkbenchGate('nor')" id="w-gate-nor"
+                            class="workbench-btn w-full p-3 text-left rounded-xl border-2 border-japandi-border hover:bg-japandi-bg font-sans font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-between">NOR
+                            Gate <span class="math-sym"><span class="overbar">A + B</span></span></button>
+                        <button onclick="selectWorkbenchGate('and3')" id="w-gate-and3"
+                            class="workbench-btn w-full p-3 text-left rounded-xl border-2 border-japandi-border hover:bg-japandi-bg font-sans font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-between">3-In
+                            AND
+                            <span class="math-sym">A &middot; B &middot; C</span></button>
+                        <button onclick="selectWorkbenchGate('or3')" id="w-gate-or3"
+                            class="workbench-btn w-full p-3 text-left rounded-xl border-2 border-japandi-border hover:bg-japandi-bg font-sans font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-between">3-In
+                            OR
+                            <span class="math-sym">A + B + C</span></button>
+                        <button onclick="selectWorkbenchGate('combosop')" id="w-gate-combosop"
+                            class="workbench-btn w-full p-3 text-left rounded-xl border-2 border-japandi-border hover:bg-japandi-bg font-sans font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-between">Combo
+                            SOP
+                            <span class="math-sym">(A &middot; B) + C</span></button>
+                        <button onclick="selectWorkbenchGate('combopos')" id="w-gate-combopos"
+                            class="workbench-btn w-full p-3 text-left rounded-xl border-2 border-japandi-border hover:bg-japandi-bg font-sans font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-between">Combo
+                            POS
+                            <span class="math-sym">(A + B) &middot; C</span></button>
+                    </div>
+
+                    <!-- Gate Details Panel -->
+                    <div
+                        class="lg:col-span-8 bg-japandi-bg border border-japandi-border rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-inner">
+                        <!-- SVG Display Container -->
+                        <div class="w-full md:w-1/2 flex justify-center items-center h-40 bg-japandi-surface border border-japandi-border rounded-xl shadow-sm"
+                            id="workbench-svg-container">
+                            <div id="wb-inputs" class="flex flex-col justify-between h-16 mr-2"></div>
+                            <div id="wb-svg-wrapper"></div>
+                            <div id="wb-outputs" class="ml-2"></div>
+                        </div>
+                        <!-- Details and Truth Table -->
+                        <div class="w-full md:w-1/2 flex flex-col">
+                            <h4 id="workbench-gate-title"
+                                class="font-serif font-bold text-xl text-japandi-ink mb-2 flex flex-wrap items-center">
+                                Gate Name</h4>
+                            <p id="workbench-gate-desc"
+                                class="text-xs text-japandi-muted font-sans font-light leading-relaxed mb-4">Description
+                                of how the gate functions physically in electronic computer circuits.</p>
+
+                            <div id="workbench-gate-scenario"
+                                class="mb-4 bg-japandi-terracottaLight/40 p-3 rounded-xl border border-japandi-terracotta/20 text-xs text-japandi-ink/90 font-sans italic leading-relaxed">
+                                <!-- Injected Scenario -->
+                            </div>
+
+                            <!-- Minified Truth Table -->
+                            <div class="bg-japandi-surface rounded-xl border border-japandi-border shadow-sm overflow-hidden text-center text-xs font-mono w-full"
+                                id="workbench-table-container">
+                                <!-- Injected Table -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Circuit Playground -->
+            <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-10 shadow-bento mb-8">
+                <h3 class="font-serif text-2xl text-japandi-ink mb-2">Custom Circuit Playground</h3>
+                <p class="text-sm font-sans font-light text-japandi-muted mb-8 leading-relaxed">
+                    Design your own 2-level combinational logic circuit. Select the logic gates from the dropdowns below
+                    to dynamically generate a custom physical circuit and truth table. The table includes an
+                    intermediate "Step 1" column so you can trace the logic step-by-step.
+                </p>
+
+                <div class="grid lg:grid-cols-2 gap-8 items-start">
+                    <!-- Controls & SVG -->
+                    <div class="flex flex-col gap-6">
+                        <!-- Formula Builder -->
+                        <div class="bg-japandi-bg p-5 rounded-2xl border border-japandi-border text-center">
+                            <span
+                                class="math-sym text-base md:text-lg font-bold text-japandi-ink flex items-center justify-center flex-wrap gap-2">
+                                z = ( w
+                                <select id="playground-g1"
+                                    class="text-sm border border-japandi-border rounded p-1 outline-none bg-japandi-surface font-sans font-bold text-japandi-terracotta cursor-pointer shadow-sm mx-1"
+                                    onchange="updateCustomPlayground()">
+                                    <option value="AND">AND</option>
+                                    <option value="OR">OR</option>
+                                    <option value="XOR">XOR</option>
+                                    <option value="NAND">NAND</option>
+                                    <option value="NOR">NOR</option>
+                                </select>
+                                x )
+                                <select id="playground-g2"
+                                    class="text-sm border border-japandi-border rounded p-1 outline-none bg-japandi-surface font-sans font-bold text-japandi-terracotta cursor-pointer shadow-sm mx-1"
+                                    onchange="updateCustomPlayground()">
+                                    <option value="AND">AND</option>
+                                    <option value="OR">OR</option>
+                                    <option value="XOR">XOR</option>
+                                    <option value="NAND">NAND</option>
+                                    <option value="NOR">NOR</option>
+                                </select>
+                                y
+                            </span>
+                        </div>
+
+                        <!-- Live SVG -->
+                        <div
+                            class="flex justify-center items-center h-48 bg-japandi-surface border border-japandi-border rounded-xl shadow-sm w-full p-4 gap-4 overflow-hidden">
+                            <div class="flex flex-col justify-between h-32 mr-2">
+                                <button id="pg-btn-w" onclick="togglePgInput('w')"
+                                    class="w-8 h-8 rounded-full bg-japandi-terracotta text-japandi-bg font-bold shadow-sm transition-all hover:scale-110 flex items-center justify-center z-10">0</button>
+                                <button id="pg-btn-x" onclick="togglePgInput('x')"
+                                    class="w-8 h-8 rounded-full bg-japandi-terracotta text-japandi-bg font-bold shadow-sm transition-all hover:scale-110 flex items-center justify-center z-10">0</button>
+                                <button id="pg-btn-y" onclick="togglePgInput('y')"
+                                    class="w-8 h-8 rounded-full bg-japandi-terracotta text-japandi-bg font-bold shadow-sm transition-all hover:scale-110 flex items-center justify-center z-10">0</button>
+                            </div>
+                            <div class="flex-grow flex justify-center max-w-[250px]">
+                                <svg viewBox="0 0 100 60" class="w-full" stroke="rgb(var(--color-ink))" stroke-width="2"
+                                    fill="none">
+                                    <rect x="18" y="4" width="30" height="24" fill="rgb(var(--color-bg))" rx="4" />
+                                    <text id="pg-svg-g1-text" x="33" y="19" font-size="10" font-family="sans-serif"
+                                        font-weight="bold" text-anchor="middle" fill="rgb(var(--color-terracotta))"
+                                        stroke="none">AND</text>
+                                    <rect x="58" y="24" width="30" height="24" fill="rgb(var(--color-bg))" rx="4" />
+                                    <text id="pg-svg-g2-text" x="73" y="39" font-size="10" font-family="sans-serif"
+                                        font-weight="bold" text-anchor="middle" fill="rgb(var(--color-terracotta))"
+                                        stroke="none">AND</text>
+                                    <line x1="0" y1="10" x2="18" y2="10" />
+                                    <line x1="0" y1="22" x2="18" y2="22" />
+                                    <line x1="0" y1="40" x2="58" y2="40" />
+                                    <line x1="48" y1="16" x2="53" y2="16" />
+                                    <line x1="53" y1="16" x2="53" y2="30" />
+                                    <line x1="53" y1="30" x2="58" y2="30" />
+                                    <line x1="88" y1="36" x2="100" y2="36" />
+                                </svg>
+                            </div>
+                            <div class="ml-2">
+                                <div id="pg-out-z"
+                                    class="w-10 h-10 rounded-full bg-japandi-terracotta text-japandi-bg font-bold flex items-center justify-center shadow-sm text-lg transition-all scale-100">
+                                    0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Truth Table -->
+                    <div
+                        class="bg-japandi-surface rounded-xl border border-japandi-border shadow-sm overflow-hidden text-center text-xs font-mono w-full h-full min-h-[300px]">
+                        <div class="h-full overflow-y-auto hide-scrollbar">
+                            <table class="w-full border-collapse text-[11px]" id="playground-table">
+                                <thead>
+                                    <tr class="bg-japandi-sandLight border-b border-japandi-border sticky top-0">
+                                        <th class="py-2">w</th>
+                                        <th class="py-2">x</th>
+                                        <th class="py-2">y</th>
+                                        <th class="py-2 text-japandi-ink">Step 1</th>
+                                        <th class="py-2 text-japandi-terracotta">Output (z)</th>
+                                    </tr>
+                                </thead>
+                                <tbody><!-- Dynamically injected --></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boolean Minimization -->
+            <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-10 shadow-bento mb-8">
+                <h3 class="font-serif text-2xl text-japandi-ink mb-4 flex items-center gap-3"><i
+                        data-lucide="minimize-2" class="text-japandi-terracotta"></i> Circuit Minimization (Why do we
+                    care?)</h3>
+                <p class="text-sm font-sans font-light text-japandi-muted mb-6 leading-relaxed">
+                    Building computer chips costs money. Every logic gate requires physical space and electricity.
+                    <strong>Minimization</strong> is the process of using algebraic laws to reduce a complex equation
+                    into a simpler one that achieves the exact same output, but requires far fewer hardware gates.
+                </p>
+                <div class="bg-japandi-terracottaLight/30 border border-japandi-terracotta/20 rounded-2xl p-6">
+                    <h4 class="font-sans font-bold text-xs uppercase tracking-widest text-japandi-terracotta mb-4">
+                        Step-by-Step Minimization Example</h4>
+                    <p class="text-sm text-japandi-ink mb-4">Let's simplify the circuit design for the equation: <span
+                            class="math-sym font-bold bg-japandi-surface px-2 py-1 rounded border border-japandi-border">F
+                            =
+                            A&middot;B + A&middot;<span class="overbar">B</span></span></p>
+
+                    <div class="space-y-4 font-mono text-sm">
+                        <div
+                            class="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 border-b border-japandi-terracotta/10 pb-3">
+                            <span class="w-56 font-bold text-japandi-ink">1. A&middot;B + A&middot;<span
+                                    class="overbar">B</span></span>
+                            <span class="text-xs text-japandi-muted italic flex-1 font-sans">&larr; Original equation
+                                (Requires 2 AND gates, 1 NOT gate, 1 OR gate)</span>
+                        </div>
+                        <div
+                            class="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 border-b border-japandi-terracotta/10 pb-3">
+                            <span class="w-56 font-bold text-japandi-ink">2. A &middot; (B + <span
+                                    class="overbar">B</span>)</span>
+                            <span class="text-xs text-japandi-muted italic flex-1 font-sans">&larr; Factor out 'A' using
+                                the Distributive Law backwards.</span>
+                        </div>
+                        <div
+                            class="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 border-b border-japandi-terracotta/10 pb-3">
+                            <span class="w-56 font-bold text-japandi-ink">3. A &middot; (1)</span>
+                            <span class="text-xs text-japandi-muted italic flex-1 font-sans">&larr; (B + <span
+                                    class="overbar">B</span>) is always 1 (True) thanks to the Complement Law.</span>
+                        </div>
+                        <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-8">
+                            <span class="w-56 font-bold text-japandi-terracotta">4. A</span>
+                            <span class="text-xs text-japandi-terracotta italic font-semibold flex-1 font-sans">&larr; A
+                                AND 1 is just A (Identity Law). We reduced 4 gates down to ZERO gates! (Just a
+                                wire).</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOP & POS Concepts -->
+            <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-10 shadow-bento">
+                <h3 class="font-serif text-2xl text-japandi-ink mb-6">Canonical Declarations</h3>
+                <p class="text-sm font-sans font-light text-japandi-muted mb-6 leading-relaxed">
+                    A Boolean function is represented canonically in either <strong>Sum-of-Products (SOP)</strong> form
+                    (constructed by OR-ing Minterms) or <strong>Product-of-Sums (POS)</strong> form (constructed by
+                    AND-ing Maxterms). Think of Canonical forms as the mathematical "standardized blueprints" extracted
+                    directly from a Truth Table before any minimization happens.
+                </p>
+
+                <div class="bg-japandi-sandLight/50 p-6 rounded-2xl border border-japandi-border mb-8">
+                    <h4 class="font-sans font-bold text-xs uppercase tracking-widest text-japandi-ink mb-3">
+                        Understanding Minterms vs. Maxterms</h4>
+                    <p class="text-sm text-japandi-muted font-light leading-relaxed mb-4">Imagine analyzing a single row
+                        in a truth table where <span class="math-sym font-medium">A=1, B=0, C=1</span>.</p>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="plus" class="w-5 h-5 text-japandi-matcha shrink-0 mt-0.5"></i>
+                            <div class="leading-relaxed">
+                                <strong class="text-japandi-ink">Minterm (Used for SOP):</strong> We want an expression
+                                that equals exactly <strong>1</strong> for this row. We multiply (AND): <span
+                                    class="math-sym font-bold bg-japandi-surface px-2 py-0.5 border border-japandi-border rounded mx-1">A
+                                    &middot; <span class="overbar">B</span> &middot; C</span>. Notice how we put an
+                                overbar on B to flip it from 0 to 1 so the whole statement is true.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="minus" class="w-5 h-5 text-japandi-terracotta shrink-0 mt-0.5"></i>
+                            <div class="leading-relaxed">
+                                <strong class="text-japandi-ink">Maxterm (Used for POS):</strong> We want an expression
+                                that equals exactly <strong>0</strong> for this row. We add (OR): <span
+                                    class="math-sym font-bold bg-japandi-surface px-2 py-0.5 border border-japandi-border rounded mx-1"><span
+                                        class="overbar">A</span> + B + <span class="overbar">C</span></span>. The logic
+                                is reversed! We put overbars on A and C to force them to 0.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-japandi-bg p-5 rounded-2xl border border-japandi-border">
+                        <h4 class="font-sans font-bold text-xs uppercase tracking-widest text-japandi-terracotta mb-2">
+                            SOP Minterm Translation Rules</h4>
+                        <p class="text-xs text-japandi-ink/80 leading-relaxed">
+                            Minterms represent rows evaluating to <strong>1</strong>. If a variable's value is 0, add an
+                            overbar (primed/complemented). If the variable's value is 1, keep it unprimed.
+                        </p>
+                    </div>
+                    <div class="bg-japandi-bg p-5 rounded-2xl border border-japandi-border">
+                        <h4 class="font-sans font-bold text-xs uppercase tracking-widest text-japandi-matcha mb-2">POS
+                            Maxterm Translation Rules</h4>
+                        <p class="text-xs text-japandi-ink/80 leading-relaxed">
+                            Maxterms represent rows evaluating to <strong>0</strong>. If a variable's value is 0, keep
+                            it unprimed. If the variable's value is 1, add an overbar (primed/complemented).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: CANONICAL SOLVER -->
+        <div id="tab-lab-canonical" class="tab-panel">
+            <div class="mb-8 border-b border-japandi-border pb-6">
+                <span
+                    class="text-japandi-terracotta font-sans text-xs uppercase tracking-widest font-bold mb-2 block">Interactive
+                    Lab Tool</span>
+                <h1 class="font-serif text-4xl font-bold text-japandi-ink tracking-tight">Canonical SOP/POS Solver</h1>
+                <p class="text-japandi-muted text-sm font-sans font-light mt-2 max-w-2xl leading-relaxed">
+                    Keith, you can click on the output column (F) in the table below to toggle its binary value
+                    between 0 and 1. Watch how the algebra automatically updates to generate the Minterm/Maxterm
+                    expressions.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8">
+                <!-- Interactive Truth Table -->
+                <div class="lg:col-span-5 bg-japandi-surface border border-japandi-border rounded-3xl p-6 shadow-bento">
+                    <div class="overflow-x-auto hide-scrollbar">
+                        <table class="w-full text-center font-mono text-xs border-collapse">
+                            <thead>
+                                <tr
+                                    class="bg-japandi-bg border-b border-japandi-border uppercase tracking-widest text-japandi-muted">
+                                    <th class="py-3 px-2">A</th>
+                                    <th class="py-3 px-2">B</th>
+                                    <th class="py-3 px-2 border-r border-japandi-border">C</th>
+                                    <th class="py-3 px-2 text-japandi-terracotta">F (Output)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-japandi-border/40" id="solver-tbody">
+                                <!-- Row 0 -->
+                                <tr class="hover:bg-japandi-bg/30">
+                                    <td class="py-3 px-2">0</td>
+                                    <td class="py-3 px-2">0</td>
+                                    <td class="py-3 px-2 border-r border-japandi-border">0</td>
+                                    <td class="py-2 px-2"><button onclick="toggleSolverRow(0)" id="f-row-0"
+                                            class="w-12 py-1 bg-japandi-terracotta text-japandi-bg font-bold rounded-lg shadow-sm hover:scale-110 active:scale-95 transition-all cursor-pointer">0</button>
+                                    </td>
+                                </tr>
+                                <!-- Row 1 -->
+                                <tr class="hover:bg-japandi-bg/30">
+                                    <td class="py-3 px-2">0</td>
+                                    <td class="py-3 px-2">0</td>
+                                    <td class="py-3 px-2 border-r border-japandi-border">1</td>
+                                    <td class="py-2 px-2"><button onclick="toggleSolverRow(1)" id="f-row-1"
+                                            class="w-12 py-1 bg-japandi-matcha text-japandi-bg font-bold rounded-lg shadow-sm hover:scale-110 active:scale-95 transition-all cursor-pointer">1</button>
+                                    </td>
+                                </tr>
+                                <!-- Row 2 -->
+                                <tr class="hover:bg-japandi-bg/30">
+                                    <td class="py-3 px-2">0</td>
+                                    <td class="py-3 px-2">1</td>
+                                    <td class="py-3 px-2 border-r border-japandi-border">0</td>
+                                    <td class="py-2 px-2"><button onclick="toggleSolverRow(2)" id="f-row-2"
+                                            class="w-12 py-1 bg-japandi-terracotta text-japandi-bg font-bold rounded-lg shadow-sm hover:scale-110 active:scale-95 transition-all cursor-pointer">0</button>
+                                    </td>
+                                </tr>
+                                <!-- Row 3 -->
+                                <tr class="hover:bg-japandi-bg/30">
+                                    <td class="py-3 px-2">0</td>
+                                    <td class="py-3 px-2">1</td>
+                                    <td class="py-3 px-2 border-r border-japandi-border">1</td>
+                                    <td class="py-2 px-2"><button onclick="toggleSolverRow(3)" id="f-row-3"
+                                            class="w-12 py-1 bg-japandi-terracotta text-japandi-bg font-bold rounded-lg shadow-sm hover:scale-110 active:scale-95 transition-all cursor-pointer">0</button>
+                                    </td>
+                                </tr>
+                                <!-- Row 4 -->
+                                <tr class="hover:bg-japandi-bg/30">
+                                    <td class="py-3 px-2">1</td>
+                                    <td class="py-3 px-2">0</td>
+                                    <td class="py-3 px-2 border-r border-japandi-border">0</td>
+                                    <td class="py-2 px-2"><button onclick="toggleSolverRow(4)" id="f-row-4"
+                                            class="w-12 py-1 bg-japandi-matcha text-japandi-bg font-bold rounded-lg shadow-sm hover:scale-110 active:scale-95 transition-all cursor-pointer">1</button>
+                                    </td>
+                                </tr>
+                                <!-- Row 5 -->
+                                <tr class="hover:bg-japandi-bg/30">
+                                    <td class="py-3 px-2">1</td>
+                                    <td class="py-3 px-2">0</td>
+                                    <td class="py-3 px-2 border-r border-japandi-border">1</td>
+                                    <td class="py-2 px-2"><button onclick="toggleSolverRow(5)" id="f-row-5"
+                                            class="w-12 py-1 bg-japandi-terracotta text-japandi-bg font-bold rounded-lg shadow-sm hover:scale-110 active:scale-95 transition-all cursor-pointer">0</button>
+                                    </td>
+                                </tr>
+                                <!-- Row 6 -->
+                                <tr class="hover:bg-japandi-bg/30">
+                                    <td class="py-3 px-2">1</td>
+                                    <td class="py-3 px-2">1</td>
+                                    <td class="py-3 px-2 border-r border-japandi-border">0</td>
+                                    <td class="py-2 px-2"><button onclick="toggleSolverRow(6)" id="f-row-6"
+                                            class="w-12 py-1 bg-japandi-terracotta text-japandi-bg font-bold rounded-lg shadow-sm hover:scale-110 active:scale-95 transition-all cursor-pointer">0</button>
+                                    </td>
+                                </tr>
+                                <!-- Row 7 -->
+                                <tr class="hover:bg-japandi-bg/30">
+                                    <td class="py-3 px-2">1</td>
+                                    <td class="py-3 px-2">1</td>
+                                    <td class="py-3 px-2 border-r border-japandi-border">1</td>
+                                    <td class="py-2 px-2"><button onclick="toggleSolverRow(7)" id="f-row-7"
+                                            class="w-12 py-1 bg-japandi-matcha text-japandi-bg font-bold rounded-lg shadow-sm hover:scale-110 active:scale-95 transition-all cursor-pointer">1</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Algebraic Outputs -->
+                <div class="lg:col-span-7 flex flex-col gap-6">
+                    <!-- SOP Card -->
+                    <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 shadow-bento">
+                        <span
+                            class="text-[10px] font-sans font-bold uppercase tracking-widest text-japandi-matcha block mb-1">Minterm
+                            Summation</span>
+                        <h3 class="font-serif font-bold text-xl text-japandi-ink mb-4">Sum of Products (SOP)</h3>
+                        <div
+                            class="bg-japandi-matchaLight/50 p-4 rounded-xl border border-japandi-matcha/20 mb-3 font-mono text-sm overflow-x-auto">
+                            <span class="font-sans font-semibold text-japandi-muted">F(A,B,C) = </span> <span
+                                id="solver-sop-sig" class="font-bold text-japandi-matcha">&Sigma;(1, 4, 7)</span>
+                        </div>
+                        <div
+                            class="bg-japandi-bg p-4 rounded-xl border border-japandi-border font-mono text-sm md:text-base overflow-x-auto">
+                            <span id="solver-sop-exp"
+                                class="math-sym font-bold inline-block transition-all duration-300">A&middot;B&middot;C
+                                +
+                                A&middot;B&middot;C + A&middot;B&middot;C</span>
+                        </div>
+                    </div>
+
+                    <!-- POS Card -->
+                    <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 shadow-bento">
+                        <span
+                            class="text-[10px] font-sans font-bold uppercase tracking-widest text-japandi-terracotta block mb-1">Maxterm
+                            Multiplication</span>
+                        <h3 class="font-serif font-bold text-xl text-japandi-ink mb-4">Product of Sums (POS)</h3>
+                        <div
+                            class="bg-japandi-terracottaLight/50 p-4 rounded-xl border border-japandi-terracotta/20 mb-3 font-mono text-sm overflow-x-auto">
+                            <span class="font-sans font-semibold text-japandi-muted">F(A,B,C) = </span> <span
+                                id="solver-pos-sig" class="font-bold text-japandi-terracotta">&Pi;(0, 2, 3, 5, 6)</span>
+                        </div>
+                        <div
+                            class="bg-japandi-bg p-4 rounded-xl border border-japandi-border font-mono text-sm md:text-base overflow-x-auto">
+                            <span id="solver-pos-exp"
+                                class="math-sym font-bold inline-block transition-all duration-300">(A+B+C) &middot;
+                                (A+B+C)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: MULTI-LEVEL QUIZ -->
+        <div id="tab-lab-quiz" class="tab-panel">
+            <div class="mb-8 border-b border-japandi-border pb-6">
+                <span
+                    class="text-japandi-terracotta font-sans text-xs uppercase tracking-widest font-bold mb-2 block">Practice
+                    Sandbox</span>
+                <h1 class="font-serif text-4xl font-bold text-japandi-ink tracking-tight">Active Recall Assessment</h1>
+                <p class="text-japandi-muted text-sm font-sans font-light mt-2 max-w-2xl leading-relaxed">
+                    Test your understanding across three distinct disciplines. Choose a topic and select your target
+                    difficulty level to generate infinite practice questions with complete mathematical solution keys.
+                </p>
+            </div>
+
+            <div
+                class="bg-japandi-surface border border-japandi-border rounded-3xl shadow-bento p-6 md:p-10 w-full max-w-5xl mx-auto">
+                <!-- Controls -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
+                    <div class="flex flex-wrap gap-2 bg-japandi-bg p-2 rounded-xl border border-japandi-border w-fit">
+                        <button onclick="setGenTopic('equiv')" id="topic-equiv"
+                            class="topic-btn active px-4 py-2 rounded-lg font-sans text-xs uppercase font-bold">M5:
+                            Equivalences</button>
+                        <button onclick="setGenTopic('pred')" id="topic-pred"
+                            class="topic-btn px-4 py-2 rounded-lg font-sans text-xs uppercase font-bold hover:bg-japandi-bg">M6:
+                            Predicates</button>
+                        <button onclick="setGenTopic('bool')" id="topic-bool"
+                            class="topic-btn px-4 py-2 rounded-lg font-sans text-xs uppercase font-bold hover:bg-japandi-bg">M7:
+                            Boolean Algebra</button>
+                    </div>
+                    <div class="flex gap-2 w-full lg:w-auto bg-japandi-bg p-2 rounded-xl border border-japandi-border">
+                        <button onclick="setGenDiff('easy')" id="diff-easy"
+                            class="diff-btn flex-1 lg:flex-none px-4 py-2 rounded-lg bg-japandi-ink text-japandi-bg font-sans text-xs uppercase font-bold transition-all shadow-sm active">Easy</button>
+                        <button onclick="setGenDiff('med')" id="diff-med"
+                            class="diff-btn flex-1 lg:flex-none px-4 py-2 rounded-lg bg-japandi-surface text-japandi-ink border border-japandi-border font-sans text-xs uppercase font-bold hover:bg-japandi-sandLight transition-all">Medium</button>
+                        <button onclick="setGenDiff('hard')" id="diff-hard"
+                            class="diff-btn flex-1 lg:flex-none px-4 py-2 rounded-lg bg-japandi-surface text-japandi-ink border border-japandi-border font-sans text-xs uppercase font-bold hover:bg-japandi-sandLight transition-all">Hard</button>
+                    </div>
+                </div>
+
+                <!-- Problem Card -->
+                <div
+                    class="bg-japandi-bg p-6 md:p-10 rounded-3xl border border-japandi-border mb-8 text-center flex flex-col items-center justify-center min-h-[220px] shadow-inner relative">
+                    <span id="quiz-topic-badge"
+                        class="text-[10px] uppercase font-bold text-japandi-muted tracking-widest mb-4">Module 5
+                        Question</span>
+                    <div id="quiz-question-content"
+                        class="math-sym text-lg md:text-2xl text-japandi-ink font-bold break-words whitespace-normal px-4 w-full">
+                        <!-- Problem goes here -->
+                    </div>
+                </div>
+
+                <!-- Answer Sandbox -->
+                <div id="quiz-answer-box" class="hidden mb-8">
+                    <div class="bg-japandi-terracottaLight border border-japandi-terracotta/20 rounded-3xl p-6 md:p-8">
+                        <span
+                            class="text-[10px] uppercase font-bold text-japandi-terracotta tracking-widest block mb-4 border-b border-japandi-terracotta/10 pb-2">Step-by-Step
+                            Derivation Solution</span>
+                        <div id="quiz-solution-step"
+                            class="math-sym text-base md:text-xl font-bold text-japandi-matcha mb-4">
+                            <!-- Correct Output -->
+                        </div>
+                        <div id="quiz-explanation"
+                            class="bg-japandi-surface p-4 rounded-2xl border border-japandi-border shadow-sm text-xs leading-relaxed font-sans font-light">
+                            <!-- Explanation -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Control Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="generateQuizProblem()"
+                        class="flex-grow py-3 bg-japandi-ink text-japandi-bg hover:bg-japandi-ink/80 font-sans text-xs md:text-sm uppercase font-bold rounded-xl transition-all shadow-sm">Generate
+                        New</button>
+                    <button onclick="toggleQuizAnswer()" id="btn-toggle-quiz-ans"
+                        class="flex-grow py-3 bg-japandi-surface text-japandi-ink border border-japandi-border hover:bg-japandi-bg font-sans text-xs md:text-sm uppercase font-bold rounded-xl transition-all shadow-sm">Show
+                        Answer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: DYNAMIC PLAYGROUND -->
+        <div id="tab-lab-playground" class="tab-panel">
+            <div class="mb-8 border-b border-japandi-border pb-6">
+                <span
+                    class="text-japandi-terracotta font-sans text-xs uppercase tracking-widest font-bold mb-2 block">Interactive
+                    Sandbox</span>
+                <h1 class="font-serif text-4xl font-bold text-japandi-ink tracking-tight">Dynamic Expression Evaluator
+                </h1>
+                <p class="text-japandi-muted text-sm font-sans font-light mt-2 max-w-2xl leading-relaxed">
+                    Design custom logical circuits instantly! Type any Boolean algebra expression below using variables
+                    (like A, B, C) and operators (AND, OR, NOT, XOR). The system will automatically detect your
+                    variables, map out a full truth table, and mathematically evaluate the logic dynamically.
+                </p>
+            </div>
+
+            <div class="bg-japandi-surface border border-japandi-border rounded-3xl p-6 md:p-10 shadow-bento">
+                <div class="flex flex-col md:flex-row gap-4 mb-4">
+                    <input type="text" id="play-expr" placeholder="e.g., A AND (B OR NOT C) XOR D"
+                        class="flex-grow bg-japandi-bg border border-japandi-border rounded-xl p-4 font-mono text-japandi-ink text-lg focus:outline-none focus:border-japandi-terracotta transition-colors shadow-inner"
+                        oninput="debounceGeneratePlayground()">
+                    <button onclick="generatePlayground()"
+                        class="px-8 py-4 bg-japandi-ink text-japandi-bg font-sans font-bold uppercase tracking-wider text-sm rounded-xl shadow-sm hover:bg-japandi-ink/80 transition-all whitespace-nowrap">
+                        Generate Table
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 mb-8 text-xs font-mono text-japandi-muted">
+                    <span class="font-sans font-semibold text-japandi-ink mr-2">Supported Syntax:</span>
+                    <span class="bg-japandi-sandLight px-2 py-1 rounded border border-japandi-border shadow-sm">AND, &,
+                        *</span>
+                    <span class="bg-japandi-sandLight px-2 py-1 rounded border border-japandi-border shadow-sm">OR, |,
+                        +</span>
+                    <span class="bg-japandi-sandLight px-2 py-1 rounded border border-japandi-border shadow-sm">XOR,
+                        ^</span>
+                    <span class="bg-japandi-sandLight px-2 py-1 rounded border border-japandi-border shadow-sm">NOT, !,
+                        ~</span>
+                    <span class="bg-japandi-sandLight px-2 py-1 rounded border border-japandi-border shadow-sm">Vars:
+                        A-Z</span>
+                </div>
+
+                <!-- Error Message -->
+                <div id="play-error"
+                    class="hidden text-japandi-terracotta font-sans font-semibold text-sm mb-6 bg-japandi-terracottaLight p-4 rounded-xl border border-japandi-terracotta/20">
+                </div>
+
+                <!-- Table Container -->
+                <div class="overflow-x-auto hide-scrollbar border border-japandi-border rounded-xl shadow-sm hidden transition-all duration-300"
+                    id="play-table-wrapper">
+                    <table class="w-full text-center font-mono text-sm border-collapse" id="play-table">
+                        <thead>
+                            <tr class="bg-japandi-bg border-b border-japandi-border uppercase tracking-widest text-japandi-muted"
+                                id="play-thead-row"></tr>
+                        </thead>
+                        <tbody class="divide-y divide-japandi-border/40 text-japandi-ink" id="play-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // ----------------------------------------------------
+        // THEME TOGGLE
+        // ----------------------------------------------------
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+            const iconName = isDark ? 'sun' : 'moon';
+            document.getElementById('theme-toggle-mobile').innerHTML = `<i data-lucide="${iconName}" class="w-5 h-5"></i>`;
+            document.getElementById('theme-toggle-desktop').innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4"></i>`;
+            lucide.createIcons();
+        }
+
+        document.getElementById('theme-toggle-mobile').addEventListener('click', toggleTheme);
+        document.getElementById('theme-toggle-desktop').addEventListener('click', toggleTheme);
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-toggle-mobile').innerHTML = `<i data-lucide="sun" class="w-5 h-5"></i>`;
+            document.getElementById('theme-toggle-desktop').innerHTML = `<i data-lucide="sun" class="w-4 h-4"></i>`;
+        }
+
+        // ----------------------------------------------------
+        // SIDEBAR TAB SWITCHER
+        // ----------------------------------------------------
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            const targetPanel = document.getElementById(`tab-${tabId}`);
+            if (targetPanel) targetPanel.classList.add('active');
+
+            // Set active sidebar styling
+            const targetBtn = document.querySelector(`[onclick="switchTab('${tabId}')"]`);
+            if (targetBtn) targetBtn.classList.add('active');
+
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('hidden');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('hidden');
         });
+
+        // ----------------------------------------------------
+        // MODULE 5 FLASHCARD FLIPPER
+        // ----------------------------------------------------
+        function flipCard(cardElement) {
+            cardElement.classList.toggle('flipped');
+        }
+
+        // ----------------------------------------------------
+        // MODULE 7 WORKBENCH CONTROLLER
+        // ----------------------------------------------------
+        const workbenchGates = {
+            and: {
+                inputs: 2,
+                title: "AND Gate",
+                equation: "z = x &middot; y",
+                desc: "Outputs a high signal (1) only if all inputs are high (1). Follows standard mathematical multiplication protocols.",
+                scenario: "<strong>Real-World Scenario:</strong> An ATM requires <em>both</em> a valid bank card inserted (1) AND the correct PIN entered (1) to dispense cash.",
+                svg: `<svg viewBox="0 0 100 60" class="w-40 h-24" stroke="rgb(var(--color-ink))" stroke-width="2.5" fill="none">
+                        <path d="M10 10 H50 C70 10, 80 25, 80 30 C80 35, 70 50, 50 50 H10 Z" fill="rgb(var(--color-matcha-light))"/>
+                        <line x1="0" y1="20" x2="10" y2="20" />
+                        <line x1="0" y1="40" x2="10" y2="40" />
+                        <line x1="80" y1="30" x2="100" y2="30" />
+                      </svg>`,
+                table: `<table class="w-full border-collapse">
+                            <thead><tr class="bg-japandi-sandLight border-b border-japandi-border"><th class="py-1">x</th><th class="py-1">y</th><th class="py-1">Output (z)</th></tr></thead>
+                            <tbody>
+                                <tr id="wb-row-00" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-01" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-10" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-11" class="transition-colors"><td>1</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                            </tbody>
+                        </table>`
+            },
+            or: {
+                inputs: 2,
+                title: "OR Gate",
+                equation: "z = x + y",
+                desc: "Outputs a high signal (1) if at least one of the inputs is high. Follows mathematical binary addition.",
+                scenario: "<strong>Real-World Scenario:</strong> A car's interior dome light turns on if <em>either</em> the driver's door is open (1) OR the passenger's door is open (1).",
+                svg: `<svg viewBox="0 0 100 60" class="w-40 h-24" stroke="rgb(var(--color-ink))" stroke-width="2.5" fill="none">
+                        <path d="M10 10 C25 15, 25 45, 10 50 C30 50, 70 45, 80 30 C70 15, 30 10, 10 10 Z" fill="rgb(var(--color-terracotta-light))"/>
+                        <line x1="0" y1="20" x2="15" y2="20" />
+                        <line x1="0" y1="40" x2="15" y2="40" />
+                        <line x1="80" y1="30" x2="100" y2="30" />
+                      </svg>`,
+                table: `<table class="w-full border-collapse">
+                            <thead><tr class="bg-japandi-sandLight border-b border-japandi-border"><th class="py-1">x</th><th class="py-1">y</th><th class="py-1">Output (z)</th></tr></thead>
+                            <tbody>
+                                <tr id="wb-row-00" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-01" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-10" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-11" class="transition-colors"><td>1</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                            </tbody>
+                        </table>`
+            },
+            not: {
+                inputs: 1,
+                title: "NOT Gate (Inverter)",
+                equation: "z = <span class='overbar'>x</span>",
+                desc: "Produces a complemented or inverted logic state. A low input (0) becomes high, and vice versa.",
+                scenario: "<strong>Real-World Scenario:</strong> An automatic night-light turns ON (1) when its solar sensor detects that it is NOT daytime (0).",
+                svg: `<svg viewBox="0 0 100 60" class="w-40 h-24" stroke="rgb(var(--color-ink))" stroke-width="2.5" fill="none">
+                        <polygon points="20,15 65,30 20,45" fill="rgb(var(--color-sand-light))"/>
+                        <circle cx="70" cy="30" r="5" fill="rgb(var(--color-surface))" />
+                        <line x1="0" y1="30" x2="20" y2="30" />
+                        <line x1="75" y1="30" x2="100" y2="30" />
+                      </svg>`,
+                table: `<table class="w-full border-collapse">
+                            <thead><tr class="bg-japandi-sandLight border-b border-japandi-border"><th class="py-1">Input (x)</th><th class="py-1">Output (z)</th></tr></thead>
+                            <tbody>
+                                <tr id="wb-row-0" class="transition-colors border-b border-japandi-border/30"><td>0</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-1" class="transition-colors"><td>1</td><td class="text-japandi-terracotta">0</td></tr>
+                            </tbody>
+                        </table>`
+            },
+            nand: {
+                inputs: 2,
+                title: "NAND Gate",
+                equation: "z = <span class='overbar'>x &middot; y</span>",
+                desc: "An inverted AND gate. Generates a low logic output (0) only when all inputs are high.",
+                scenario: "<strong>Real-World Scenario:</strong> A seatbelt warning chime stays ON (1) unless <em>both</em> the driver is seated (1) AND the belt is buckled (1), which finally turns it OFF (0).",
+                svg: `<svg viewBox="0 0 100 60" class="w-40 h-24" stroke="rgb(var(--color-ink))" stroke-width="2.5" fill="none">
+                        <path d="M10 10 H50 C70 10, 80 25, 80 30 C80 35, 70 50, 50 50 H10 Z" fill="rgb(var(--color-matcha-light))"/>
+                        <circle cx="85" cy="30" r="5" fill="rgb(var(--color-surface))" />
+                        <line x1="0" y1="20" x2="10" y2="20" />
+                        <line x1="0" y1="40" x2="10" y2="40" />
+                        <line x1="90" y1="30" x2="100" y2="30" />
+                      </svg>`,
+                table: `<table class="w-full border-collapse">
+                            <thead><tr class="bg-japandi-sandLight border-b border-japandi-border"><th class="py-1">x</th><th class="py-1">y</th><th class="py-1">Output (z)</th></tr></thead>
+                            <tbody>
+                                <tr id="wb-row-00" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-01" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-10" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-11" class="transition-colors"><td>1</td><td>1</td><td class="text-japandi-terracotta">0</td></tr>
+                            </tbody>
+                        </table>`
+            },
+            nor: {
+                inputs: 2,
+                title: "NOR Gate",
+                equation: "z = <span class='overbar'>x + y</span>",
+                desc: "An inverted OR gate. Generates a high output (1) only when all inputs are low.",
+                scenario: "<strong>Real-World Scenario:</strong> A smart refrigerator compressor will only run (1) when <em>neither</em> the top door (0) NOR the bottom freezer drawer (0) are currently open.",
+                svg: `<svg viewBox="0 0 100 60" class="w-40 h-24" stroke="rgb(var(--color-ink))" stroke-width="2.5" fill="none">
+                        <path d="M10 10 C25 15, 25 45, 10 50 C30 50, 70 45, 80 30 C70 15, 30 10, 10 10 Z" fill="rgb(var(--color-terracotta-light))"/>
+                        <circle cx="85" cy="30" r="5" fill="rgb(var(--color-surface))" />
+                        <line x1="0" y1="20" x2="15" y2="20" />
+                        <line x1="0" y1="40" x2="15" y2="40" />
+                        <line x1="90" y1="30" x2="100" y2="30" />
+                      </svg>`,
+                table: `<table class="w-full border-collapse">
+                            <thead><tr class="bg-japandi-sandLight border-b border-japandi-border"><th class="py-1">x</th><th class="py-1">y</th><th class="py-1">Output (z)</th></tr></thead>
+                            <tbody>
+                                <tr id="wb-row-00" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-01" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-10" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-11" class="transition-colors"><td>1</td><td>1</td><td class="text-japandi-terracotta">0</td></tr>
+                            </tbody>
+                        </table>`
+            },
+            and3: {
+                inputs: 3,
+                title: "3-Input AND Gate",
+                equation: "z = w &middot; x &middot; y",
+                desc: "Outputs a high signal (1) only if all three inputs are high. The logical intersection of multiple variables.",
+                scenario: "<strong>Real-World Scenario:</strong> A nuclear launch sequence requires the commander's key (1) AND the deputy's key (1) AND the correct launch code (1) to initiate.",
+                svg: `<svg viewBox="0 0 100 60" class="w-40 h-24" stroke="rgb(var(--color-ink))" stroke-width="2.5" fill="none">
+                        <path d="M10 10 H50 C70 10, 80 25, 80 30 C80 35, 70 50, 50 50 H10 Z" fill="rgb(var(--color-matcha-light))"/>
+                        <line x1="0" y1="20" x2="10" y2="20" />
+                        <line x1="0" y1="30" x2="10" y2="30" />
+                        <line x1="0" y1="40" x2="10" y2="40" />
+                        <line x1="80" y1="30" x2="100" y2="30" />
+                      </svg>`,
+                table: `<div class="max-h-36 overflow-y-auto hide-scrollbar"><table class="w-full border-collapse text-[10px]">
+                            <thead><tr class="bg-japandi-sandLight border-b border-japandi-border sticky top-0"><th class="py-1">w</th><th class="py-1">x</th><th class="py-1">y</th><th class="py-1">Output (z)</th></tr></thead>
+                            <tbody>
+                                <tr id="wb-row-000" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-001" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td>1</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-010" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-011" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td>1</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-100" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-101" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td>1</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-110" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>1</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-111" class="transition-colors"><td>1</td><td>1</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                            </tbody>
+                        </table></div>`
+            },
+            or3: {
+                inputs: 3,
+                title: "3-Input OR Gate",
+                equation: "z = w + x + y",
+                desc: "Outputs a high signal (1) if any of the three inputs are high. The logical union of multiple variables.",
+                scenario: "<strong>Real-World Scenario:</strong> A home alarm system triggers if the front door opens (1) OR the back door opens (1) OR a window breaks (1).",
+                svg: `<svg viewBox="0 0 100 60" class="w-40 h-24" stroke="rgb(var(--color-ink))" stroke-width="2.5" fill="none">
+                        <path d="M10 10 C25 15, 25 45, 10 50 C30 50, 70 45, 80 30 C70 15, 30 10, 10 10 Z" fill="rgb(var(--color-terracotta-light))"/>
+                        <line x1="0" y1="20" x2="15" y2="20" />
+                        <line x1="0" y1="30" x2="18" y2="30" />
+                        <line x1="0" y1="40" x2="15" y2="40" />
+                        <line x1="80" y1="30" x2="100" y2="30" />
+                      </svg>`,
+                table: `<div class="max-h-36 overflow-y-auto hide-scrollbar"><table class="w-full border-collapse text-[10px]">
+                            <thead><tr class="bg-japandi-sandLight border-b border-japandi-border sticky top-0"><th class="py-1">w</th><th class="py-1">x</th><th class="py-1">y</th><th class="py-1">Output (z)</th></tr></thead>
+                            <tbody>
+                                <tr id="wb-row-000" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-001" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-010" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td>0</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-011" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-100" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td>0</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-101" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-110" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>1</td><td>0</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-111" class="transition-colors"><td>1</td><td>1</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                            </tbody>
+                        </table></div>`
+            },
+            combosop: {
+                inputs: 3,
+                title: "Combinational Logic (SOP)",
+                equation: "z = (w &middot; x) + y",
+                desc: "A combinational logic circuit utilizing multiple gates. This mimics a Sum-of-Products structure where AND results are fed into an OR gate.",
+                scenario: "<strong>Real-World Scenario:</strong> A bank vault opens if you enter the right code (w) AND scan a badge (x), OR if a manager simply uses the master override key (y).",
+                svg: `<svg viewBox="0 0 100 60" class="w-40 h-24" stroke="rgb(var(--color-ink))" stroke-width="2.5" fill="none">
+                        <path d="M 20 10 H 35 C 45 10, 50 15, 50 20 C 50 25, 45 30, 35 30 H 20 Z" fill="rgb(var(--color-matcha-light))"/>
+                        <path d="M 60 15 C 65 20, 65 40, 60 45 C 70 45, 85 40, 90 30 C 85 20, 70 15, 60 15 Z" fill="rgb(var(--color-terracotta-light))"/>
+                        <line x1="0" y1="15" x2="20" y2="15" />
+                        <line x1="0" y1="25" x2="20" y2="25" />
+                        <line x1="0" y1="40" x2="63" y2="40" />
+                        <line x1="50" y1="20" x2="63" y2="20" />
+                        <line x1="90" y1="30" x2="100" y2="30" />
+                      </svg>`,
+                table: `<div class="max-h-36 overflow-y-auto hide-scrollbar"><table class="w-full border-collapse text-[10px]">
+                            <thead><tr class="bg-japandi-sandLight border-b border-japandi-border sticky top-0"><th class="py-1">w</th><th class="py-1">x</th><th class="py-1">y</th><th class="py-1">Output (z)</th></tr></thead>
+                            <tbody>
+                                <tr id="wb-row-000" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-001" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-010" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-011" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-100" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-101" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-110" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>1</td><td>0</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-111" class="transition-colors"><td>1</td><td>1</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                            </tbody>
+                        </table></div>`
+            },
+            combopos: {
+                inputs: 3,
+                title: "Combinational Logic (POS)",
+                equation: "z = (w + x) &middot; y",
+                desc: "A combinational logic circuit where the result of an OR condition must be met ALONG WITH an independent AND condition. Mimics a Product-of-Sums structure.",
+                scenario: "<strong>Real-World Scenario:</strong> A car starts only if the driver's seatbelt is fastened (y) AND either the push-to-start button is pressed (w) OR the remote start is triggered (x).",
+                svg: `<svg viewBox="0 0 100 60" class="w-40 h-24" stroke="rgb(var(--color-ink))" stroke-width="2.5" fill="none">
+                        <path d="M 20 10 C 25 15, 25 35, 20 40 C 30 40, 45 35, 50 25 C 45 15, 30 10, 20 10 Z" fill="rgb(var(--color-terracotta-light))"/>
+                        <path d="M 60 15 H 75 C 85 15, 90 22.5, 90 30 C 90 37.5, 85 45, 75 45 H 60 Z" fill="rgb(var(--color-matcha-light))"/>
+                        <line x1="0" y1="15" x2="23" y2="15" />
+                        <line x1="0" y1="35" x2="23" y2="35" />
+                        <line x1="0" y1="40" x2="60" y2="40" />
+                        <line x1="50" y1="25" x2="60" y2="25" />
+                        <line x1="90" y1="30" x2="100" y2="30" />
+                      </svg>`,
+                table: `<div class="max-h-36 overflow-y-auto hide-scrollbar"><table class="w-full border-collapse text-[10px]">
+                            <thead><tr class="bg-japandi-sandLight border-b border-japandi-border sticky top-0"><th class="py-1">w</th><th class="py-1">x</th><th class="py-1">y</th><th class="py-1">Output (z)</th></tr></thead>
+                            <tbody>
+                                <tr id="wb-row-000" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-001" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>0</td><td>1</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-010" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-011" class="transition-colors border-b border-japandi-border/30"><td>0</td><td>1</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-100" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-101" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>0</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                                <tr id="wb-row-110" class="transition-colors border-b border-japandi-border/30"><td>1</td><td>1</td><td>0</td><td class="text-japandi-terracotta">0</td></tr>
+                                <tr id="wb-row-111" class="transition-colors"><td>1</td><td>1</td><td>1</td><td class="text-japandi-matcha">1</td></tr>
+                            </tbody>
+                        </table></div>`
+            }
+        };
+
+        let currentWbGate = 'and';
+        let wbInputs = { w: 0, x: 0, y: 0 };
+
+        function selectWorkbenchGate(gateKey) {
+            document.querySelectorAll('.workbench-btn').forEach(btn => {
+                btn.classList.remove('bg-japandi-ink', 'text-japandi-bg', 'border-japandi-ink');
+                btn.classList.add('bg-japandi-surface', 'text-japandi-ink', 'border-japandi-border');
+            });
+
+            const btn = document.getElementById(`w-gate-${gateKey}`);
+            if (btn) {
+                btn.classList.replace('bg-japandi-surface', 'bg-japandi-ink');
+                btn.classList.replace('text-japandi-ink', 'text-japandi-bg');
+                btn.classList.replace('border-japandi-border', 'border-japandi-ink');
+            }
+
+            const data = workbenchGates[gateKey];
+            currentWbGate = gateKey;
+            wbInputs = { w: 0, x: 0, y: 0 };
+
+            // Build Inputs HTML
+            let inputsHtml = '';
+            if (data.inputs === 1) {
+                inputsHtml = `<button id="wb-btn-x" onclick="toggleWbInput('x')" class="w-8 h-8 rounded-full bg-japandi-terracotta text-japandi-bg font-bold shadow-sm transition-all hover:scale-110 focus:outline-none flex items-center justify-center">0</button>`;
+            } else if (data.inputs === 2) {
+                inputsHtml = `
+                    <button id="wb-btn-x" onclick="toggleWbInput('x')" class="w-8 h-8 rounded-full bg-japandi-terracotta text-japandi-bg font-bold shadow-sm transition-all hover:scale-110 focus:outline-none flex items-center justify-center">0</button>
+                    <button id="wb-btn-y" onclick="toggleWbInput('y')" class="w-8 h-8 rounded-full bg-japandi-terracotta text-japandi-bg font-bold shadow-sm transition-all hover:scale-110 focus:outline-none flex items-center justify-center">0</button>
+                `;
+            } else if (data.inputs === 3) {
+                inputsHtml = `
+                    <button id="wb-btn-w" onclick="toggleWbInput('w')" class="w-8 h-8 rounded-full bg-japandi-terracotta text-japandi-bg font-bold shadow-sm transition-all hover:scale-110 focus:outline-none flex items-center justify-center">0</button>
+                    <button id="wb-btn-x" onclick="toggleWbInput('x')" class="w-8 h-8 rounded-full bg-japandi-terracotta text-japandi-bg font-bold shadow-sm transition-all hover:scale-110 focus:outline-none flex items-center justify-center">0</button>
+                    <button id="wb-btn-y" onclick="toggleWbInput('y')" class="w-8 h-8 rounded-full bg-japandi-terracotta text-japandi-bg font-bold shadow-sm transition-all hover:scale-110 focus:outline-none flex items-center justify-center">0</button>
+                `;
+            }
+
+            const inputsContainer = document.getElementById('wb-inputs');
+            inputsContainer.innerHTML = inputsHtml;
+            inputsContainer.className = "flex flex-col mr-2 " + (data.inputs === 1 ? "justify-center h-16" : (data.inputs === 2 ? "justify-between h-16" : "justify-between h-24"));
+
+            document.getElementById('wb-svg-wrapper').innerHTML = data.svg;
+            document.getElementById('wb-outputs').innerHTML = `<div id="wb-out-z" class="w-10 h-10 rounded-full bg-japandi-terracotta text-japandi-bg font-bold flex items-center justify-center shadow-sm text-lg transition-all scale-100">0</div>`;
+
+            document.getElementById('workbench-gate-title').innerHTML = `${data.title} <span class="math-sym font-mono font-medium text-japandi-terracotta text-sm ml-3 inline-flex items-center gap-1">${data.equation}</span>`;
+            document.getElementById('workbench-gate-desc').innerText = data.desc;
+            document.getElementById('workbench-gate-scenario').innerHTML = data.scenario;
+            document.getElementById('workbench-table-container').innerHTML = data.table;
+
+            calculateWbOutput();
+        }
+
+        function toggleWbInput(inputName) {
+            wbInputs[inputName] = wbInputs[inputName] === 0 ? 1 : 0;
+
+            const btn = document.getElementById(`wb-btn-${inputName}`);
+            if (btn) {
+                btn.innerText = wbInputs[inputName];
+                if (wbInputs[inputName] === 1) {
+                    btn.classList.replace('bg-japandi-terracotta', 'bg-japandi-matcha');
+                } else {
+                    btn.classList.replace('bg-japandi-matcha', 'bg-japandi-terracotta');
+                }
+            }
+            calculateWbOutput();
+        }
+
+        function calculateWbOutput() {
+            let out = 0;
+            const w = wbInputs.w;
+            const x = wbInputs.x;
+            const y = wbInputs.y;
+            switch (currentWbGate) {
+                case 'and': out = x & y; break;
+                case 'or': out = x | y; break;
+                case 'not': out = x === 0 ? 1 : 0; break;
+                case 'nand': out = (x & y) === 0 ? 1 : 0; break;
+                case 'nor': out = (x | y) === 0 ? 1 : 0; break;
+                case 'and3': out = w & x & y; break;
+                case 'or3': out = w | x | y; break;
+                case 'combosop': out = ((w & x) | y); break;
+                case 'combopos': out = ((w | x) & y); break;
+            }
+
+            const outEl = document.getElementById('wb-out-z');
+            if (outEl) {
+                outEl.innerText = out;
+                if (out === 1) {
+                    outEl.classList.replace('bg-japandi-terracotta', 'bg-japandi-matcha');
+                } else {
+                    outEl.classList.replace('bg-japandi-matcha', 'bg-japandi-terracotta');
+                }
+
+                outEl.classList.remove('scale-[1.15]');
+                void outEl.offsetWidth;
+                outEl.classList.add('scale-[1.15]');
+                setTimeout(() => outEl.classList.remove('scale-[1.15]'), 200);
+            }
+
+            highlightWbTableRow();
+        }
+
+        function highlightWbTableRow() {
+            ['000', '001', '010', '011', '100', '101', '110', '111', '00', '01', '10', '11', '0', '1'].forEach(id => {
+                const row = document.getElementById(`wb-row-${id}`);
+                if (row) {
+                    row.classList.remove('bg-japandi-matchaLight', 'font-bold');
+                }
+            });
+
+            let activeId = '';
+            if (workbenchGates[currentWbGate].inputs === 1) activeId = `${wbInputs.x}`;
+            else if (workbenchGates[currentWbGate].inputs === 2) activeId = `${wbInputs.x}${wbInputs.y}`;
+            else if (workbenchGates[currentWbGate].inputs === 3) activeId = `${wbInputs.w}${wbInputs.x}${wbInputs.y}`;
+
+            const activeRow = document.getElementById(`wb-row-${activeId}`);
+            if (activeRow) {
+                activeRow.classList.add('bg-japandi-matchaLight', 'font-bold');
+            }
+        }
+
+        // Initialize workbench
+        selectWorkbenchGate('and');
+
+        // ----------------------------------------------------
+        // CUSTOM CIRCUIT PLAYGROUND
+        // ----------------------------------------------------
+        let pgInputs = { w: 0, x: 0, y: 0 };
+
+        function togglePgInput(inputName) {
+            pgInputs[inputName] = pgInputs[inputName] === 0 ? 1 : 0;
+            const btn = document.getElementById(`pg-btn-${inputName}`);
+            if (btn) {
+                btn.innerText = pgInputs[inputName];
+                if (pgInputs[inputName] === 1) {
+                    btn.classList.replace('bg-japandi-terracotta', 'bg-japandi-matcha');
+                } else {
+                    btn.classList.replace('bg-japandi-matcha', 'bg-japandi-terracotta');
+                }
+            }
+            updateCustomPlayground();
+        }
+
+        function evaluateLogicGate(gate, a, b) {
+            switch (gate) {
+                case 'AND': return a & b;
+                case 'OR': return a | b;
+                case 'XOR': return a ^ b;
+                case 'NAND': return (a & b) === 0 ? 1 : 0;
+                case 'NOR': return (a | b) === 0 ? 1 : 0;
+                default: return 0;
+            }
+        }
+
+        function updateCustomPlayground() {
+            const g1 = document.getElementById('playground-g1').value;
+            const g2 = document.getElementById('playground-g2').value;
+
+            document.getElementById('pg-svg-g1-text').textContent = g1;
+            document.getElementById('pg-svg-g2-text').textContent = g2;
+
+            let tbodyHtml = '';
+            for (let w = 0; w <= 1; w++) {
+                for (let x = 0; x <= 1; x++) {
+                    for (let y = 0; y <= 1; y++) {
+                        let step1 = evaluateLogicGate(g1, w, x);
+                        let z = evaluateLogicGate(g2, step1, y);
+                        const isActive = (w === pgInputs.w && x === pgInputs.x && y === pgInputs.y);
+                        const rowClass = isActive ? 'bg-japandi-matchaLight font-bold' : '';
+                        const colorClass = z === 1 ? 'text-japandi-matcha' : 'text-japandi-terracotta';
+                        tbodyHtml += `<tr class="transition-colors border-b border-japandi-border/30 ${rowClass}"><td class="py-2">${w}</td><td class="py-2">${x}</td><td class="py-2">${y}</td><td class="py-2 text-japandi-muted">${step1}</td><td class="py-2 ${colorClass}">${z}</td></tr>`;
+                    }
+                }
+            }
+            document.querySelector('#playground-table tbody').innerHTML = tbodyHtml;
+
+            const outEl = document.getElementById('pg-out-z');
+            const finalOut = evaluateLogicGate(g2, evaluateLogicGate(g1, pgInputs.w, pgInputs.x), pgInputs.y);
+            outEl.innerText = finalOut;
+            outEl.className = `w-10 h-10 rounded-full text-japandi-bg font-bold flex items-center justify-center shadow-sm text-lg transition-all scale-100 ${finalOut === 1 ? 'bg-japandi-matcha' : 'bg-japandi-terracotta'}`;
+        }
+
+        // ----------------------------------------------------
+        // COMPACT / CHEAT SHEET MODE
+        // ----------------------------------------------------
+        let isCompactMode = false;
+        function toggleCompactMode() {
+            isCompactMode = !isCompactMode;
+            const body = document.body;
+            const desktopBtn = document.getElementById('desktop-compact-btn');
+            const mobileBtn = document.getElementById('mobile-compact-btn');
+            const compactHeader = document.getElementById('compact-header');
+
+            if (isCompactMode) {
+                body.classList.add('compact-mode');
+                desktopBtn.innerHTML = '<i data-lucide="book-open" class="w-4 h-4"></i> Tutorial Mode';
+                mobileBtn.innerHTML = '<i data-lucide="book-open" class="w-5 h-5"></i>';
+                compactHeader.classList.remove('hidden');
+                document.getElementById('progress-bar').style.width = '100%';
+            } else {
+                body.classList.remove('compact-mode');
+                desktopBtn.innerHTML = '<i data-lucide="layout-grid" class="w-4 h-4"></i> Cheat Sheet Mode';
+                mobileBtn.innerHTML = '<i data-lucide="layout-grid" class="w-5 h-5"></i>';
+                compactHeader.classList.add('hidden');
+                updateTutorialUI();
+            }
+            lucide.createIcons();
+            window.dispatchEvent(new Event('resize'));
+        }
+
+        // ----------------------------------------------------
+        // INTERACTIVE TRUTH TABLE SOLVER (CANONICAL)
+        // ----------------------------------------------------
+        let solverOutputs = [0, 1, 0, 0, 1, 0, 0, 1]; // Row values starting from index 0 to 7
+
+        function toggleSolverRow(rowIndex) {
+            const btn = document.getElementById(`f-row-${rowIndex}`);
+            if (!btn) return;
+
+            // Toggle binary values
+            if (solverOutputs[rowIndex] === 1) {
+                solverOutputs[rowIndex] = 0;
+                btn.innerText = "0";
+                btn.classList.replace('bg-japandi-matcha', 'bg-japandi-terracotta');
+            } else {
+                solverOutputs[rowIndex] = 1;
+                btn.innerText = "1";
+                btn.classList.replace('bg-japandi-terracotta', 'bg-japandi-matcha');
+            }
+            recalculateCanonicalForms(false);
+        }
+
+        function recalculateCanonicalForms(isInitial = true) {
+            const rows = [
+                { a: 0, b: 0, c: 0, min: "<span class='overbar'>A</span>&middot;<span class='overbar'>B</span>&middot;<span class='overbar'>C</span>", max: "(A+B+C)" },
+                { a: 0, b: 0, c: 1, min: "<span class='overbar'>A</span>&middot;<span class='overbar'>B</span>&middot;C", max: "(A+B+<span class='overbar'>C</span>)" },
+                { a: 0, b: 1, c: 0, min: "<span class='overbar'>A</span>&middot;B&middot;<span class='overbar'>C</span>", max: "(A+<span class='overbar'>B</span>+C)" },
+                { a: 0, b: 1, c: 1, min: "<span class='overbar'>A</span>&middot;B&middot;C", max: "(A+<span class='overbar'>B</span>+<span class='overbar'>C</span>)" },
+                { a: 1, b: 0, c: 0, min: "A&middot;<span class='overbar'>B</span>&middot;<span class='overbar'>C</span>", max: "(<span class='overbar'>A</span>+B+C)" },
+                { a: 1, b: 0, c: 1, min: "A&middot;<span class='overbar'>B</span>&middot;C", max: "(<span class='overbar'>A</span>+B+<span class='overbar'>C</span>)" },
+                { a: 1, b: 1, c: 0, min: "A&middot;B&middot;<span class='overbar'>C</span>", max: "(<span class='overbar'>A</span>+<span class='overbar'>B</span>+C)" },
+                { a: 1, b: 1, c: 1, min: "A&middot;B&middot;C", max: "(<span class='overbar'>A</span>+<span class='overbar'>B</span>+<span class='overbar'>C</span>)" }
+            ];
+
+            let mintermIndexes = [];
+            let maxtermIndexes = [];
+            let sopTerms = [];
+            let posTerms = [];
+
+            solverOutputs.forEach((val, idx) => {
+                if (val === 1) {
+                    mintermIndexes.push(idx);
+                    sopTerms.push(rows[idx].min);
+                } else {
+                    maxtermIndexes.push(idx);
+                    posTerms.push(rows[idx].max);
+                }
+            });
+
+            // Update SOP Signature UI
+            const sopSig = mintermIndexes.length > 0 ? `&Sigma;(${mintermIndexes.join(', ')})` : "&empty; (Null Function)";
+            document.getElementById('solver-sop-sig').innerHTML = sopSig;
+            // Update SOP Expression UI
+            const sopExp = mintermIndexes.length > 0 ? sopTerms.join(' + ') : "0";
+            const sopEl = document.getElementById('solver-sop-exp');
+            sopEl.innerHTML = sopExp;
+
+            // Update POS Signature UI
+            const posSig = maxtermIndexes.length > 0 ? `&Pi;(${maxtermIndexes.join(', ')})` : "&Pi; (Tautology)";
+            document.getElementById('solver-pos-sig').innerHTML = posSig;
+            // Update POS Expression UI
+            const posExp = maxtermIndexes.length > 0 ? posTerms.join(' &middot; ') : "1";
+            const posEl = document.getElementById('solver-pos-exp');
+            posEl.innerHTML = posExp;
+
+            // Animation indicator on update
+            if (!isInitial) {
+                [sopEl, posEl].forEach(el => {
+                    el.classList.remove('scale-[1.03]', 'text-japandi-terracotta');
+                    void el.offsetWidth; // Trigger DOM reflow
+                    el.classList.add('scale-[1.03]', 'text-japandi-terracotta');
+                    setTimeout(() => el.classList.remove('scale-[1.03]', 'text-japandi-terracotta'), 300);
+                });
+            }
+        }
+
+        // Initialize table
+        recalculateCanonicalForms(true);
+
+        // ----------------------------------------------------
+        // MULTI-LEVEL QUIZ SANDBOX
+        // ----------------------------------------------------
+        let activeGenTopic = 'equiv';
+        let activeGenDiff = 'easy';
+
+        function setGenTopic(topic) {
+            activeGenTopic = topic;
+            document.querySelectorAll('.topic-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-japandi-matcha', 'text-japandi-bg', 'border-japandi-matcha', 'shadow-[0_4px_12px_rgba(140,154,134,0.3)]');
+                btn.classList.add('bg-japandi-surface', 'text-japandi-ink', 'border-japandi-border');
+            });
+            const activeBtn = document.getElementById(`topic-${topic}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-japandi-surface', 'text-japandi-ink', 'border-japandi-border');
+                activeBtn.classList.add('active', 'bg-japandi-matcha', 'text-japandi-bg', 'border-japandi-matcha', 'shadow-[0_4px_12px_rgba(140,154,134,0.3)]');
+            }
+            generateQuizProblem();
+        }
+
+        function setGenDiff(diff) {
+            activeGenDiff = diff;
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-japandi-ink', 'text-japandi-bg', 'border-japandi-ink');
+                btn.classList.add('bg-japandi-surface', 'text-japandi-ink', 'border-japandi-border');
+            });
+            const activeBtn = document.getElementById(`diff-${diff}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-japandi-surface', 'text-japandi-ink', 'border-japandi-border');
+                activeBtn.classList.add('active', 'bg-japandi-ink', 'text-japandi-bg', 'border-japandi-ink');
+            }
+            generateQuizProblem();
+        }
+
+        function toggleQuizAnswer() {
+            const ansArea = document.getElementById('quiz-answer-box');
+            const btn = document.getElementById('btn-toggle-quiz-ans');
+            if (!ansArea || !btn) return;
+
+            ansArea.classList.toggle('hidden');
+
+            if (ansArea.classList.contains('hidden')) {
+                btn.innerHTML = 'Show Answer';
+                btn.classList.replace('bg-japandi-bg', 'bg-japandi-surface');
+            } else {
+                btn.innerHTML = 'Hide Answer';
+                btn.classList.replace('bg-japandi-surface', 'bg-japandi-bg');
+            }
+        }
+
+        const quizDatabase = {
+            equiv: {
+                easy: [
+                    { q: "Evaluate using propositional laws:<br> p &and; p", a: "p", exp: "Idempotent Law: Applying the same logical operation to a single proposition repeatedly leaves it unchanged." },
+                    { q: "Evaluate using propositional laws:<br> p &or; p", a: "p", exp: "Idempotent Law: Repeated logical ORing yields the original propositional variable." },
+                    { q: "Simplify double negation:<br> <span class='overbar'><span class='overbar'>p</span></span>", a: "p", exp: "Involution Law: Double negation cancels out, returning the original proposition." }
+                ],
+                med: [
+                    { q: "State the Converse of:<br> p &rarr; q", a: "q &rarr; p", exp: "Converse permutation is formed by swapping the positions of the antecedent and the consequent." },
+                    { q: "State the Inverse of:<br> p &rarr; q", a: "p̅ &rarr; q̅", exp: "Inverse permutation is formed by negating both the antecedent and consequent without changing positions." },
+                    { q: "State the Contrapositive of:<br> p &rarr; q", a: "q̅ &rarr; p̅", exp: "Contrapositive permutation is formed by both swapping and negating the antecedent and consequent." }
+                ],
+                hard: [
+                    { q: "Evaluate using complement and identity laws:<br> (p &or; p̅) &and; t", a: "t", exp: "1. Complement Law: p &or; p̅ &equiv; t<br>2. Substitution: t &and; t<br>3. Identity Law: t &and; t &equiv; t" },
+                    { q: "Evaluate absorption:<br> p &and; (p &or; q)", a: "p", exp: "Absorption Law: The standalone term 'p' absorbs the outer compound disjunction." }
+                ]
+            },
+            pred: {
+                easy: [
+                    { q: "Translate to logical predicate notation:<br> 'All humans are mortal'", a: "&forall;x [H(x) &rarr; M(x)]", exp: "Dict: H(x) = 'x is human', M(x) = 'x is mortal'. Paraphrase: 'For all x, if x is human, then x is mortal'." },
+                    { q: "Translate to logical predicate notation:<br> 'Some rats are grey'", a: "&exist;x [R(x) &and; G(x)]", exp: "Dict: R(x) = 'x is a rat', G(x) = 'x is grey'. Paraphrase: 'There exists at least one x such that x is a rat and x is grey'." }
+                ],
+                med: [
+                    { q: "Translate to logical predicate notation:<br> 'No cats are reptiles'", a: "&forall;x [C(x) &rarr; &not;R(x)]", exp: "Dict: C(x) = 'x is a cat', R(x) = 'x is a reptile'. Paraphrase: 'For all x, if x is a cat, then x is NOT a reptile'." },
+                    { q: "Translate to logical predicate notation:<br> 'Some of the children didn't apologize'", a: "&exist;x [C(x) &and; &not;A(x)]", exp: "Dict: C(x) = 'x is a child', A(x) = 'x apologized'. Paraphrase: 'There exists some child who did not apologize'." }
+                ],
+                hard: [
+                    { q: "Translate to logical predicate notation:<br> 'Every student who studies hard will pass'", a: "&forall;x [(S(x) &and; H(x)) &rarr; P(x)]", exp: "Dict: S(x) = 'x is a student', H(x) = 'x studies hard', P(x) = 'x will pass'. The conditions group using AND." },
+                    { q: "Translate to logical predicate notation:<br> 'Nobody likes cheats'", a: "&not;&exist;x [P(x) &and; C(x)] &nbsp;OR&nbsp; &forall;x [P(x) &rarr; &not;C(x)]", exp: "Dict: P(x) = 'x is a person', C(x) = 'x likes cheats'. Equivalent to 'For all x, if x is a person, then x does not like cheats'." }
+                ]
+            },
+            bool: {
+                easy: [
+                    { q: "Evaluate Operator Precedence hierarchy order:<br> AND, OR, NOT", a: "1. NOT (Complement)<br>2. AND (&middot;)<br>3. OR (+)", exp: "Complement holds the highest priority, followed by Logical Multiplication, and finally Logical Addition." },
+                    { q: "Calculate total rows in a 3-variable truth table", a: "8 rows", exp: "Formula: 2<sup>n</sup>. Since n = 3, 2<sup>3</sup> = 8 row combinations." }
+                ],
+                med: [
+                    { q: "Determine the binary row value designation for index row 5", a: "101", exp: "Count in binary starting from 0. Row 0 = 000, Row 1 = 001, Row 2 = 010, Row 3 = 011, Row 4 = 100, Row 5 = 101." },
+                    { q: "Evaluate function F = x + y̅ &middot; z for x=0, y=1, z=1", a: "0", exp: "1. Evaluate NOT: y̅ = NOT 1 = 0<br>2. Evaluate AND: 0 &middot; z &rarr; 0 &middot; 1 = 0<br>3. Evaluate OR: x + 0 &rarr; 0 + 0 = 0" }
+                ],
+                hard: [
+                    { q: "State the simplified minimized form of:<br> x&middot;y + x&middot;y̅", a: "x", exp: "1. Factor out x: x &middot; (y + y̅)<br>2. Complement Law: y + y̅ = 1<br>3. Identity: x &middot; 1 = x" },
+                    { q: "Complemented Boolean Function of:<br> F = x̅ &middot; y &middot; z̅ + x̅ &middot; y̅ &middot; z", a: "F̅ = (x + y̅ + z) &middot; (x + y + z̅)", exp: "By De Morgan's Generalized Theorems, interchange all addition and multiplication operations, and complement each individual literal." }
+                ]
+            }
+        };
+
+        function generateQuizProblem() {
+            const list = quizDatabase[activeGenTopic][activeGenDiff];
+            const item = list[Math.floor(Math.random() * list.length)];
+
+            const badgeMap = {
+                equiv: 'Module 5: Algebraic Equivalences',
+                pred: 'Module 6: Predicate Logic',
+                bool: 'Module 7: Boolean Algebra'
+            };
+            document.getElementById('quiz-topic-badge').innerText = badgeMap[activeGenTopic];
+            document.getElementById('quiz-question-content').innerHTML = item.q;
+            document.getElementById('quiz-solution-step').innerHTML = `<span class="text-xs uppercase tracking-widest text-japandi-muted block font-sans mb-1 font-bold">Answer Key</span> ${item.a}`;
+            document.getElementById('quiz-explanation').innerHTML = `<strong class="font-bold text-japandi-terracotta">Step-by-step logic explanation:</strong><br>${item.exp}`;
+
+            // Reset UI
+            document.getElementById('quiz-answer-box').classList.add('hidden');
+            const btn = document.getElementById('btn-toggle-quiz-ans');
+            btn.innerHTML = 'Show Answer';
+            btn.classList.replace('bg-japandi-bg', 'bg-japandi-surface');
+        }
+
+        // ----------------------------------------------------
+        // DYNAMIC EXPRESSION PLAYGROUND
+        // ----------------------------------------------------
+        let playDebounceTimer;
+        function debounceGeneratePlayground() {
+            clearTimeout(playDebounceTimer);
+            playDebounceTimer = setTimeout(generatePlayground, 500);
+        }
+
+        function generatePlayground() {
+            const exprInput = document.getElementById('play-expr').value.trim();
+            const errorEl = document.getElementById('play-error');
+            const tableWrapper = document.getElementById('play-table-wrapper');
+            const theadRow = document.getElementById('play-thead-row');
+            const tbody = document.getElementById('play-tbody');
+
+            if (!exprInput) {
+                errorEl.classList.add('hidden');
+                tableWrapper.classList.add('hidden');
+                return;
+            }
+
+            let upperExpr = exprInput.toUpperCase();
+
+            // Extract variables (A-Z) ignoring operator words
+            let noOps = upperExpr.replace(/\b(AND|OR|XOR|NOT)\b/g, '');
+            let varsMatch = noOps.match(/[A-Z]/g);
+
+            let uniqueVars = [];
+            if (varsMatch) {
+                uniqueVars = [...new Set(varsMatch)].sort();
+            }
+
+            if (uniqueVars.length === 0) {
+                errorEl.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 inline mr-1 align-text-bottom"></i> No variables detected. Please use letters like A, B, C.';
+                errorEl.classList.remove('hidden');
+                tableWrapper.classList.add('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            if (uniqueVars.length > 8) {
+                errorEl.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1 align-text-bottom"></i> Too many variables! Limited to 8 to prevent crashing your browser.';
+                errorEl.classList.remove('hidden');
+                tableWrapper.classList.add('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            // Convert expression to safely parsable native JS format
+            let jsExprTemplate = upperExpr
+                .replace(/&&/g, '&').replace(/\|\|/g, '|')
+                .replace(/\bAND\b/g, '&').replace(/\bOR\b/g, '|')
+                .replace(/\bXOR\b/g, '^').replace(/\bNOT\b/g, '!')
+                .replace(/\+/g, '|').replace(/\*/g, '&').replace(/~/g, '!');
+
+            // Test basic syntax on a dummy row of all 0s
+            try {
+                let testExpr = jsExprTemplate;
+                uniqueVars.forEach(v => testExpr = testExpr.replace(new RegExp(`\\b${v}\\b`, 'g'), '0'));
+                let testResult = new Function("return " + testExpr)();
+                if (typeof testResult !== 'number' && typeof testResult !== 'boolean') throw new Error();
+            } catch (e) {
+                errorEl.innerHTML = `<i data-lucide="x-octagon" class="w-4 h-4 inline mr-1 align-text-bottom"></i> Syntax Error: Check your operators, symbols, or unmatched parentheses.`;
+                errorEl.classList.remove('hidden');
+                tableWrapper.classList.add('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+
+            // Build dynamic UI
+            let headHtml = '';
+            uniqueVars.forEach(v => headHtml += `<th class="py-3 px-4">${v}</th>`);
+            headHtml += `<th class="py-3 px-4 border-l border-japandi-border text-japandi-terracotta bg-japandi-terracottaLight/30 w-32">Output (F)</th>`;
+            theadRow.innerHTML = headHtml;
+
+            const totalRows = Math.pow(2, uniqueVars.length);
+            let bodyHtml = '';
+            for (let i = 0; i < totalRows; i++) {
+                let evalExpr = jsExprTemplate;
+                let rowHtml = `<tr class="hover:bg-japandi-bg transition-colors">`;
+                uniqueVars.forEach((v, idx) => {
+                    let val = (i >> (uniqueVars.length - 1 - idx)) & 1;
+                    evalExpr = evalExpr.replace(new RegExp(`\\b${v}\\b`, 'g'), val);
+                    rowHtml += `<td class="py-3 px-4">${val}</td>`;
+                });
+                let result = !!(new Function("return " + evalExpr)()) ? 1 : 0;
+                const outColor = result === 1 ? 'text-japandi-matcha bg-japandi-matchaLight/30' : 'text-japandi-terracotta bg-japandi-terracottaLight/30';
+                bodyHtml += rowHtml + `<td class="py-3 px-4 border-l border-japandi-border font-bold text-lg ${outColor}">${result}</td></tr>`;
+            }
+            tbody.innerHTML = bodyHtml;
+            tableWrapper.classList.remove('hidden');
+        }
+
+        // ----------------------------------------------------
+        // INITIALIZATIONS
+        // ----------------------------------------------------
+        window.onload = () => {
+            updateCustomPlayground();
+            generateQuizProblem();
+        };
+
     </script>
 </body>
+
 </html>
